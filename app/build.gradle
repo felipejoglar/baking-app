@@ -55,6 +55,7 @@ ext {
     constraintLayoutVersion = '1.0.2'
     rxJavaVersion = '2.1.12'
     rxAndroidVersion = '2.0.2'
+    gsonVersion = '2.8.2'
 
     jUnitVersion = '4.12'
     espressoCoreVersion = '3.0.1'
@@ -70,6 +71,9 @@ dependencies {
     // Reactive Libraries
     implementation "io.reactivex.rxjava2:rxandroid:${rxAndroidVersion}"
     implementation "io.reactivex.rxjava2:rxjava:${rxJavaVersion}"
+
+    // JSON & Networking Libraries
+    implementation "com.google.code.gson:gson:${gsonVersion}"
 
     // Testing Libraries
     testImplementation "junit:junit:${jUnitVersion}"
