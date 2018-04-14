@@ -24,9 +24,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.fjoglar.bakingapp.boilerplate.R;
-import com.fjoglar.bakingapp.data.source.Repository;
-import com.fjoglar.bakingapp.data.source.local.LocalDataSource;
-import com.fjoglar.bakingapp.data.source.remote.RemoteDataSource;
+import com.fjoglar.bakingapp.data.source.RecipesRepository;
+import com.fjoglar.bakingapp.data.source.local.RecipesLocalDataSource;
+import com.fjoglar.bakingapp.data.source.remote.RecipesRemoteDataSource;
 import com.fjoglar.bakingapp.util.schedulers.SchedulerProvider;
 
 public class MainActivity extends AppCompatActivity implements MainContract.View {
@@ -45,8 +45,8 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         mProgressLoading = (ProgressBar) findViewById(R.id.progress_loading);
 
         mMainPresenter = new MainPresenter(
-                Repository.getInstance(RemoteDataSource.getInstance(),
-                        LocalDataSource.getInstance()),
+                RecipesRepository.getInstance(RecipesRemoteDataSource.getInstance(),
+                        RecipesLocalDataSource.getInstance()),
                 this,
                 SchedulerProvider.getInstance());
     }

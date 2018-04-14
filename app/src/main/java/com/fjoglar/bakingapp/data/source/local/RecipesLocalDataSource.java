@@ -14,39 +14,39 @@
  * limitations under the License.
  */
 
-package com.fjoglar.bakingapp.data.source.remote;
+package com.fjoglar.bakingapp.data.source.local;
 
 import android.support.annotation.Nullable;
 
-import com.fjoglar.bakingapp.data.source.DataSource;
+import com.fjoglar.bakingapp.data.model.Recipe;
+import com.fjoglar.bakingapp.data.source.RecipesDataSource;
+import com.fjoglar.bakingapp.data.source.RecipesRepository;
 
-import java.util.concurrent.TimeUnit;
+import java.util.List;
 
 import io.reactivex.Observable;
 
 /**
- * Concrete implementation of a remote data source that adds a latency simulating network.
+ * Concrete implementation of a local data source.
  */
-public class RemoteDataSource implements DataSource {
-
-    private static final int SERVICE_LATENCY_IN_MILLIS = 5000;
+public class RecipesLocalDataSource implements RecipesDataSource {
 
     @Nullable
-    private static RemoteDataSource INSTANCE = null;
+    private static RecipesLocalDataSource INSTANCE = null;
 
     // Prevent direct instantiation.
-    private RemoteDataSource() {
+    private RecipesLocalDataSource() {
 
     }
 
     /**
      * Returns the single instance of this class, creating it if necessary.
      *
-     * @return the {@link RemoteDataSource} instance
+     * @return the {@link RecipesLocalDataSource} instance
      */
-    public static RemoteDataSource getInstance() {
+    public static RecipesLocalDataSource getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new RemoteDataSource();
+            INSTANCE = new RecipesLocalDataSource();
         }
         return INSTANCE;
     }
@@ -59,11 +59,11 @@ public class RemoteDataSource implements DataSource {
     }
 
     @Override
-    public Observable<String> getWelcomeMessage() {
-
-        final String WELCOME_MESSAGE = "Hello World!";
-
-        return Observable.just(WELCOME_MESSAGE)
-                         .delay(SERVICE_LATENCY_IN_MILLIS, TimeUnit.MILLISECONDS);
+    public Observable<List<Recipe>> getRecipes() {
+        /**
+         * Not required for the local data source because the {@link RecipesRepository} delegates
+         * this function to the remote data source.
+         */
+        return null;
     }
 }

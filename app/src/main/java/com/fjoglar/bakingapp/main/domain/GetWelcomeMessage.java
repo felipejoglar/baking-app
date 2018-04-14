@@ -17,7 +17,7 @@
 package com.fjoglar.bakingapp.main.domain;
 
 import com.fjoglar.bakingapp.UseCase;
-import com.fjoglar.bakingapp.data.source.DataSource;
+import com.fjoglar.bakingapp.data.source.RecipesDataSource;
 
 import io.reactivex.Observable;
 import io.reactivex.Scheduler;
@@ -28,9 +28,9 @@ import io.reactivex.Scheduler;
  */
 public class GetWelcomeMessage extends UseCase<String> {
 
-    private final DataSource mRepository;
+    private final RecipesDataSource mRepository;
 
-    public GetWelcomeMessage(DataSource repository,
+    public GetWelcomeMessage(RecipesDataSource repository,
                              Scheduler threadExecutor,
                              Scheduler postExecutionThread) {
         super(threadExecutor, postExecutionThread);

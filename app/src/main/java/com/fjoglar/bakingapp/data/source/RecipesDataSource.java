@@ -16,9 +16,16 @@
 
 package com.fjoglar.bakingapp.data.source;
 
+import com.fjoglar.bakingapp.data.model.Recipe;
+
+import java.util.List;
+
 import io.reactivex.Observable;
 
-public interface DataSource {
+/**
+ * Main entry point for accessing recipes data.
+ */
+public interface RecipesDataSource {
 
-    Observable<String> getWelcomeMessage();
+    Observable<List<Recipe>> getRecipes();
 }
