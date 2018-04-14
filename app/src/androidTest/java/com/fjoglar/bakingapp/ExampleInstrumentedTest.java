@@ -1,4 +1,4 @@
-package com.fjoglar.bakingapp.boilerplate;
+package com.fjoglar.bakingapp;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

@@ -1,4 +1,4 @@
-package com.fjoglar.bakingapp.boilerplate;
+package com.fjoglar.bakingapp;
 
 import org.junit.Test;
 
