@@ -42,9 +42,9 @@ public class Ingredient implements Parcelable {
     /**
      * Use this constructor to create a new Ingredient.
      *
-     * @param quantity      quantity of the ingredient
-     * @param measure       measure of the ingredient
-     * @param ingredient    name of the ingredient
+     * @param quantity   quantity of the ingredient
+     * @param measure    measure of the ingredient
+     * @param ingredient name of the ingredient
      */
     public Ingredient(int quantity, String measure, String ingredient) {
         this.quantity = quantity;

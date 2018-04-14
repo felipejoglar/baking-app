@@ -53,12 +53,12 @@ public class Recipe implements Parcelable {
     /**
      * Use this constructor to create a new Recipe.
      *
-     * @param id            id of the recipe
-     * @param name          name of the recipe
-     * @param ingredients   list of ingredients for the recipe
-     * @param steps         step to do to complete the recipe
-     * @param servings      number of sering of he recipe
-     * @param image         image of the recipe
+     * @param id          id of the recipe
+     * @param name        name of the recipe
+     * @param ingredients list of ingredients for the recipe
+     * @param steps       step to do to complete the recipe
+     * @param servings    number of sering of he recipe
+     * @param image       image of the recipe
      */
     public Recipe(int id, String name, List<Ingredient> ingredients, List<Step> steps,
                   int servings, String image) {

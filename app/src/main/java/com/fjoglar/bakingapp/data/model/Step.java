@@ -48,11 +48,11 @@ public class Step implements Parcelable {
     /**
      * Use this constructor to create a new Step.
      *
-     * @param id                id of the step
-     * @param shortDescription  short description of the step
-     * @param description       description of the step
-     * @param videoURL          video URL of the step
-     * @param thumbnailURL      thumbnail URL of the step
+     * @param id               id of the step
+     * @param shortDescription short description of the step
+     * @param description      description of the step
+     * @param videoURL         video URL of the step
+     * @param thumbnailURL     thumbnail URL of the step
      */
     public Step(int id, String shortDescription, String description,
                 String videoURL, String thumbnailURL) {
