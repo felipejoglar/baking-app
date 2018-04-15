@@ -29,9 +29,9 @@ import com.fjoglar.bakingapp.data.source.local.RecipesLocalDataSource;
 import com.fjoglar.bakingapp.data.source.remote.RecipesRemoteDataSource;
 import com.fjoglar.bakingapp.util.schedulers.SchedulerProvider;
 
-public class MainActivity extends AppCompatActivity implements MainContract.View {
+public class MainActivity extends AppCompatActivity implements RecipesContract.View {
 
-    private MainContract.Presenter mMainPresenter;
+    private RecipesContract.Presenter mMainPresenter;
 
     private TextView mTxtWelcomeMessage;
     private ProgressBar mProgressLoading;
@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         mTxtWelcomeMessage = (TextView) findViewById(R.id.txt_welcome_message);
         mProgressLoading = (ProgressBar) findViewById(R.id.progress_loading);
 
-        mMainPresenter = new MainPresenter(
+        mMainPresenter = new RecipesPresenter(
                 RecipesRepository.getInstance(RecipesRemoteDataSource.getInstance(),
                         RecipesLocalDataSource.getInstance()),
                 this,
@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     }
 
     @Override
-    public void setPresenter(@NonNull MainContract.Presenter presenter) {
+    public void setPresenter(@NonNull RecipesContract.Presenter presenter) {
         mMainPresenter = presenter;
     }
 

@@ -18,12 +18,17 @@ package com.fjoglar.bakingapp.main;
 
 import com.fjoglar.bakingapp.BasePresenter;
 import com.fjoglar.bakingapp.BaseView;
+import com.fjoglar.bakingapp.data.model.Recipe;
 
-public interface MainContract {
+import java.util.List;
+
+public interface RecipesContract {
 
     interface View extends BaseView<Presenter> {
 
-        void showWelcomeMessage(String message);
+        void showRecipes(List<Recipe> recipes);
+
+        void showEmptyView();
 
         void showLoading();
 
@@ -32,8 +37,6 @@ public interface MainContract {
 
     interface Presenter extends BasePresenter {
 
-        void getWelcomeMessage();
-
+        void getRecipes();
     }
-
 }
