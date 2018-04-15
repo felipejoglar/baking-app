@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.fjoglar.bakingapp.main;
+package com.fjoglar.bakingapp.recipes;
 
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -22,7 +22,7 @@ import android.util.Log;
 import com.fjoglar.bakingapp.DefaultObserver;
 import com.fjoglar.bakingapp.data.model.Recipe;
 import com.fjoglar.bakingapp.data.source.RecipesDataSource;
-import com.fjoglar.bakingapp.main.domain.GetRecipes;
+import com.fjoglar.bakingapp.recipes.domain.GetRecipes;
 import com.fjoglar.bakingapp.util.schedulers.BaseSchedulerProvider;
 
 import java.util.List;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.fjoglar.bakingapp.main;
+package com.fjoglar.bakingapp.recipes;
 
 import com.fjoglar.bakingapp.BasePresenter;
 import com.fjoglar.bakingapp.BaseView;

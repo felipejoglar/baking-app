@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.fjoglar.bakingapp.main;
+package com.fjoglar.bakingapp.recipes;
 
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;

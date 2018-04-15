@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.fjoglar.bakingapp.main.domain;
+package com.fjoglar.bakingapp.recipes.domain;
 
 import com.fjoglar.bakingapp.UseCase;
 import com.fjoglar.bakingapp.data.model.Recipe;
