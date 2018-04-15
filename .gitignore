@@ -65,3 +65,6 @@ gen-external-apklibs
 # *.iml
 # modules.xml
 # *.ipr
+
+### Mac OS X ###
+.DS_Store
