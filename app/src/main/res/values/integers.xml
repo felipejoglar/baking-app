@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
 Copyright 2018 Felipe Joglar Santos
 
@@ -14,8 +15,5 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <resources>
-    <string name="app_name">Baking App</string>
-
-    <!-- RECIPES -->
-    <string name="recipes_empty_view_message">There are no recipes to show</string>
+    <integer name="recipes_column_number">1</integer>
 </resources>
