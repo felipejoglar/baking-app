@@ -17,7 +17,10 @@
 package com.fjoglar.bakingapp.main.domain;
 
 import com.fjoglar.bakingapp.UseCase;
+import com.fjoglar.bakingapp.data.model.Recipe;
 import com.fjoglar.bakingapp.data.source.RecipesDataSource;
+
+import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.Scheduler;
@@ -26,19 +29,19 @@ import io.reactivex.Scheduler;
  * This class is an implementation of {@link UseCase} that represents a use case for
  * retrieving the welcome message.
  */
-public class GetWelcomeMessage extends UseCase<String> {
+public class GetRecipes extends UseCase<List<Recipe>, Void> {
 
     private final RecipesDataSource mRepository;
 
-    public GetWelcomeMessage(RecipesDataSource repository,
-                             Scheduler threadExecutor,
-                             Scheduler postExecutionThread) {
+    public GetRecipes(RecipesDataSource repository,
+                      Scheduler threadExecutor,
+                      Scheduler postExecutionThread) {
         super(threadExecutor, postExecutionThread);
         mRepository = repository;
     }
 
     @Override
-    public Observable<String> buildUseCaseObservable() {
-        return mRepository.getWelcomeMessage();
+    public Observable<List<Recipe>> buildUseCaseObservable(Void unused) {
+        return mRepository.getRecipes();
     }
 }

@@ -20,7 +20,7 @@ import android.support.annotation.NonNull;
 
 import com.fjoglar.bakingapp.DefaultObserver;
 import com.fjoglar.bakingapp.data.source.RecipesDataSource;
-import com.fjoglar.bakingapp.main.domain.GetWelcomeMessage;
+import com.fjoglar.bakingapp.main.domain.GetRecipes;
 import com.fjoglar.bakingapp.util.schedulers.BaseSchedulerProvider;
 
 public class MainPresenter implements MainContract.Presenter {
@@ -34,7 +34,7 @@ public class MainPresenter implements MainContract.Presenter {
     @NonNull
     private final BaseSchedulerProvider mSchedulerProvider;
 
-    private final GetWelcomeMessage mGetWelcomeMessage;
+    private final GetRecipes mGetWelcomeMessage;
 
     public MainPresenter(@NonNull RecipesDataSource repository,
                          @NonNull MainContract.View mainView,
@@ -45,7 +45,7 @@ public class MainPresenter implements MainContract.Presenter {
 
         mMainView.setPresenter(this);
 
-        mGetWelcomeMessage = new GetWelcomeMessage(mRepository,
+        mGetWelcomeMessage = new GetRecipes(mRepository,
                                                    mSchedulerProvider.computation(),
                                                    mSchedulerProvider.ui());
     }

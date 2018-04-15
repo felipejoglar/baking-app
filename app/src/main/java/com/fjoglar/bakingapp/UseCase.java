@@ -23,11 +23,17 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
 
 /**
- * Use cases are the entry points to the domain layer.
+ * Use cases are the entry points to the domain layer. This class represents a execution unit for
+ * different use cases.
+ * <p>
+ * By convention each UseCase implementation will return the result using a
+ * {@link DisposableObserver} that will execute its job in a background thread and post the result
+ * in the UI thread (Main thread).
  *
- * @param <T> the request type
+ * @param <T>      the request type
+ * @param <Params> Parameters (Optional) used to build/execute this use case.
  */
-public abstract class UseCase<T> {
+public abstract class UseCase<T, Params> {
 
     private final Scheduler mThreadExecutor;
     private final Scheduler mPostExecutionThread;
@@ -42,19 +48,20 @@ public abstract class UseCase<T> {
     /**
      * Builds an {@link Observable} which will be used when executing the current {@link UseCase}.
      */
-    public abstract Observable<T> buildUseCaseObservable();
+    public abstract Observable<T> buildUseCaseObservable(Params params);
 
     /**
      * Executes the current use case.
      *
      * @param observer {@link DisposableObserver} which will be listening to the observable build
-     *                 by {@link #buildUseCaseObservable()} ()} method.
+     *                 by {@link #buildUseCaseObservable(Params params)} ()} method.
+     * @param params   Parameters (Optional) used to build/execute this use case.
      */
-    public void execute(DisposableObserver<T> observer) {
+    public void execute(DisposableObserver<T> observer, Params params) {
 
-        final Observable<T> observable = this.buildUseCaseObservable()
-                                             .subscribeOn(mThreadExecutor)
-                                             .observeOn(mPostExecutionThread);
+        final Observable<T> observable = this.buildUseCaseObservable(params)
+                .subscribeOn(mThreadExecutor)
+                .observeOn(mPostExecutionThread);
         addDisposable(observable.subscribeWith(observer));
     }
 
