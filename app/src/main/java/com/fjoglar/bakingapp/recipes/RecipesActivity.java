@@ -16,6 +16,7 @@
 
 package com.fjoglar.bakingapp.recipes;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -25,12 +26,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.fjoglar.bakingapp.R;
 import com.fjoglar.bakingapp.data.model.Recipe;
 import com.fjoglar.bakingapp.data.source.RecipesRepository;
 import com.fjoglar.bakingapp.data.source.remote.RecipesRemoteDataSource;
+import com.fjoglar.bakingapp.recipedetail.RecipeDetailActivity;
 import com.fjoglar.bakingapp.util.schedulers.SchedulerProvider;
 
 import butterknife.BindView;
@@ -151,7 +152,9 @@ public class RecipesActivity extends AppCompatActivity implements RecipesContrac
 
     @Override
     public void onRecipeClicked(Recipe recipe) {
-        Toast.makeText(getApplicationContext(), recipe.getName(), Toast.LENGTH_SHORT).show();
+        Intent recipeDetailActivityIntent = new Intent(this, RecipeDetailActivity.class);
+        recipeDetailActivityIntent.putExtra(RecipeDetailActivity.EXTRA_RECIPE, recipe);
+        startActivity(recipeDetailActivityIntent);
     }
 
     private void setUpRecyclerView() {
