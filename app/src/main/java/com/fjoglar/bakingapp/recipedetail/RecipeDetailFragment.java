@@ -41,7 +41,10 @@ import butterknife.ButterKnife;
  * Main UI for the recipe detail screen.
  */
 public class RecipeDetailFragment extends Fragment implements RecipeDetailContract.View,
-        StepsAdapter.StepClickListener {
+        StepsAdapter.OnStepClickListener {
+
+    @NonNull
+    private static final String ARGUMENT_RECIPE = "recipe";
 
     private RecipeDetailContract.Presenter mRecipeDetailPresenter;
     private Recipe mRecipe;
@@ -61,6 +64,15 @@ public class RecipeDetailFragment extends Fragment implements RecipeDetailContra
     public RecipeDetailFragment() {
     }
 
+    public static RecipeDetailFragment newInstance(@NonNull Recipe recipe) {
+        Bundle arguments = new Bundle();
+        arguments.putParcelable(ARGUMENT_RECIPE, recipe);
+
+        RecipeDetailFragment recipeDetailFragment = new RecipeDetailFragment();
+        recipeDetailFragment.setArguments(arguments);
+        return recipeDetailFragment;
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -69,24 +81,32 @@ public class RecipeDetailFragment extends Fragment implements RecipeDetailContra
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getArguments().containsKey(ARGUMENT_RECIPE)) {
+            mRecipe = getArguments().getParcelable(ARGUMENT_RECIPE);
+        }
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_recipe_detail, container, false);
+        return inflater.inflate(R.layout.fragment_recipe_detail, container, false);
+    }
 
-        ButterKnife.bind(this, root);
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        setUpIngredientsRecyclerView();
-        setUpStepsRecyclerView();
-
-        return root;
+        ButterKnife.bind(this, view);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        setUpIngredientsRecyclerView();
+        setUpStepsRecyclerView();
+
+        initPresenter();
     }
 
     @Override
@@ -97,7 +117,6 @@ public class RecipeDetailFragment extends Fragment implements RecipeDetailContra
     @Override
     public void onResume() {
         super.onResume();
-        initPresenter();
         mRecipeDetailPresenter.subscribe();
     }
 
@@ -155,11 +174,11 @@ public class RecipeDetailFragment extends Fragment implements RecipeDetailContra
 
     @Override
     public void onStepClicked(Step step) {
-        Toast.makeText(getActivity().getApplicationContext(), step.getShortDescription(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), step.getShortDescription(), Toast.LENGTH_SHORT).show();
     }
 
-    public void setRecipe(Recipe recipe) {
-        mRecipe = recipe;
+    private void initPresenter() {
+        mRecipeDetailPresenter = new RecipeDetailPresenter(this, mRecipe);
     }
 
     private void setUpIngredientsRecyclerView() {
@@ -184,9 +203,5 @@ public class RecipeDetailFragment extends Fragment implements RecipeDetailContra
                 new DividerItemDecoration(mRecyclerViewRecipeDetailSteps.getContext(),
                         DividerItemDecoration.VERTICAL));
         mRecyclerViewRecipeDetailSteps.setAdapter(mStepsAdapter);
-    }
-
-    private void initPresenter() {
-        mRecipeDetailPresenter = new RecipeDetailPresenter(this, mRecipe);
     }
 }

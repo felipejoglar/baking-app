@@ -18,4 +18,5 @@ limitations under the License.
 
     <!-- RECIPES -->
     <string name="recipes_empty_view_message">There are no recipes to show</string>
+    <string name="recipe_detail_error_message">No recipe to show</string>
 </resources>

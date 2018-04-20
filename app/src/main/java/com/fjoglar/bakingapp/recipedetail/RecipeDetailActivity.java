@@ -16,50 +16,46 @@
 
 package com.fjoglar.bakingapp.recipedetail;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.fjoglar.bakingapp.R;
 import com.fjoglar.bakingapp.data.model.Recipe;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 /**
  * Displays recipe details screen.
  */
 public class RecipeDetailActivity extends AppCompatActivity {
 
+    @NonNull
     public static final String EXTRA_RECIPE = "recipe";
-
-    @BindView(R.id.framelayout_recipe_detail_container)
-    FrameLayout mFrameLayoutRecipeDetailContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_detail);
 
-        ButterKnife.bind(this);
+        Intent intent = getIntent();
+        if (intent == null || !intent.hasExtra(EXTRA_RECIPE)) {
+            closeOnError();
+            return;
+        }
 
         // Get the requested recipe
-        Recipe recipe = getIntent().getParcelableExtra(EXTRA_RECIPE);
+        Recipe recipe = intent.getParcelableExtra(EXTRA_RECIPE);
 
         RecipeDetailFragment recipeDetailFragment = (RecipeDetailFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.framelayout_recipe_detail_container);
 
         if (recipeDetailFragment == null) {
             // Create a new recipe detail fragment
-            recipeDetailFragment = new RecipeDetailFragment();
-
-            // Set the recipe to show
-            recipeDetailFragment.setRecipe(recipe);
+            recipeDetailFragment = RecipeDetailFragment.newInstance(recipe);
 
             // Add the fragment to its container using a FragmentManager and a Transaction
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction()
+            getSupportFragmentManager().beginTransaction()
                     .add(R.id.framelayout_recipe_detail_container, recipeDetailFragment)
                     .commit();
         }
@@ -88,5 +84,10 @@ public class RecipeDetailActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    private void closeOnError() {
+        finish();
+        Toast.makeText(getApplicationContext(), R.string.recipe_detail_error_message, Toast.LENGTH_SHORT).show();
     }
 }

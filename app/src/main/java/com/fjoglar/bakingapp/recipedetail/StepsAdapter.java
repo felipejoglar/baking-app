@@ -26,10 +26,10 @@ import android.widget.TextView;
 import com.fjoglar.bakingapp.R;
 import com.fjoglar.bakingapp.data.model.Step;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import java.util.List;
 
 /**
  * Adapter that manages a collection of {@link Step}.
@@ -38,11 +38,11 @@ public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.ViewHolder> 
 
     private static final String TAG = StepsAdapter.class.getSimpleName();
 
-    private final StepClickListener mOnClickListener;
+    private final OnStepClickListener mOnStepClickListener;
     private List<Step> mStepsList;
 
-    public StepsAdapter(StepClickListener listener) {
-        mOnClickListener = listener;
+    public StepsAdapter(OnStepClickListener listener) {
+        mOnStepClickListener = listener;
     }
 
     @NonNull
@@ -58,7 +58,7 @@ public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.ViewHolder> 
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         final Step step = mStepsList.get(position);
         holder.mTextViewRecipeStepDescription.setText(step.getShortDescription());
-        holder.itemView.setOnClickListener(v -> mOnClickListener.onStepClicked(step));
+        holder.itemView.setOnClickListener(v -> mOnStepClickListener.onStepClicked(step));
     }
 
     @Override
@@ -93,7 +93,7 @@ public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.ViewHolder> 
         }
     }
 
-    public interface StepClickListener {
+    public interface OnStepClickListener {
         void onStepClicked(Step step);
     }
 }
