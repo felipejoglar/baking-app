@@ -20,6 +20,8 @@ import android.support.annotation.NonNull;
 
 import com.fjoglar.bakingapp.data.model.Step;
 
+import java.util.List;
+
 /**
  * {@link StepDetailContract.Presenter} that controls communication between views and models of
  * the presentation layer.
@@ -32,19 +34,24 @@ public class StepDetailPresenter implements StepDetailContract.Presenter {
     private final StepDetailContract.View mStepDetailView;
 
     @NonNull
-    private final Step mStep;
+    private final List<Step> mStepList;
+
+    @NonNull
+    private final int mStepIndex;
 
     public StepDetailPresenter(@NonNull StepDetailContract.View stepDetailView,
-                               @NonNull Step step) {
+                               @NonNull List<Step> stepList,
+                               @NonNull int stepIndex) {
         mStepDetailView = stepDetailView;
-        mStep = step;
+        mStepList = stepList;
+        mStepIndex = stepIndex;
 
         mStepDetailView.setPresenter(this);
     }
 
     @Override
     public void subscribe() {
-        getStepDetail(mStep);
+        getStepDetail(mStepList.get(mStepIndex));
     }
 
     @Override
@@ -57,5 +64,19 @@ public class StepDetailPresenter implements StepDetailContract.Presenter {
         mStepDetailView.showLoading();
         mStepDetailView.showStepDetail(step);
         mStepDetailView.hideLoading();
+    }
+
+    @Override
+    public void getNextStepDetail(int currentStepIndex) {
+        if (currentStepIndex != (mStepList.size() - 1)) {
+            mStepDetailView.showNextStepDetail(mStepList.get(currentStepIndex + 1));
+        }
+    }
+
+    @Override
+    public void getPreviousStepDetail(int currentStepIndex) {
+        if (currentStepIndex != 0) {
+            mStepDetailView.showPreviousStepDetail(mStepList.get(currentStepIndex - 1));
+        }
     }
 }

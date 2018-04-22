@@ -19,6 +19,7 @@ package com.fjoglar.bakingapp.stepdetail;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
@@ -27,13 +28,20 @@ import android.widget.Toast;
 import com.fjoglar.bakingapp.R;
 import com.fjoglar.bakingapp.data.model.Step;
 
+import java.util.List;
+
 /**
  * Displays step details screen.
  */
-public class StepDetailActivity extends AppCompatActivity {
+public class StepDetailActivity extends AppCompatActivity
+        implements StepDetailFragment.StepNavigationClickListener{
 
     @NonNull
-    public static final String EXTRA_STEP = "step";
+    public static final String EXTRA_STEP_LIST = "step_list";
+    @NonNull
+    public static final String EXTRA_STEP_INDEX = "step_index";
+
+    private List<Step> mStepList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,20 +49,22 @@ public class StepDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_step_detail);
 
         Intent intent = getIntent();
-        if (intent == null || !intent.hasExtra(EXTRA_STEP)) {
+        if (intent == null || !intent.hasExtra(EXTRA_STEP_LIST) ||
+                !intent.hasExtra(EXTRA_STEP_INDEX)) {
             closeOnError();
             return;
         }
 
         // Get the requested step
-        Step step = intent.getParcelableExtra(EXTRA_STEP);
+        mStepList = getIntent().getParcelableArrayListExtra(EXTRA_STEP_LIST);
+        int stepIndex = getIntent().getIntExtra(EXTRA_STEP_INDEX, 0);
 
         StepDetailFragment stepDetailFragment = (StepDetailFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.framelayout_step_detail_container);
 
         if (stepDetailFragment == null) {
             // Create a new recipe detail fragment
-            stepDetailFragment = StepDetailFragment.newInstance(step);
+            stepDetailFragment = StepDetailFragment.newInstance(mStepList, stepIndex);
 
             // Add the fragment to its container using a FragmentManager and a Transaction
             getSupportFragmentManager().beginTransaction()
@@ -96,6 +106,25 @@ public class StepDetailActivity extends AppCompatActivity {
             NavUtils.navigateUpFromSameTask(this);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void onNextStepClicked(Step step) {
+        replaceStepFragment(mStepList.indexOf(step));
+    }
+
+    public void onPreviousStepClicked(Step step) {
+        replaceStepFragment(mStepList.indexOf(step));
+    }
+
+    private void replaceStepFragment(int stepIndex) {
+        // Set the step to show
+        StepDetailFragment stepDetailFragment = StepDetailFragment.newInstance(mStepList, stepIndex);
+
+        // Add the fragment to its container using a FragmentManager and a Transaction
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.framelayout_step_detail_container, stepDetailFragment)
+                .commit();
     }
 
     private void closeOnError() {

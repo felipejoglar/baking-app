@@ -19,6 +19,7 @@ package com.fjoglar.bakingapp.recipedetail;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -37,6 +38,8 @@ import com.fjoglar.bakingapp.stepdetail.StepDetailActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import java.util.ArrayList;
 
 /**
  * Main UI for the recipe detail screen.
@@ -176,7 +179,12 @@ public class RecipeDetailFragment extends Fragment implements RecipeDetailContra
     @Override
     public void onStepClicked(Step step) {
         Intent stepDetailActivityIntent = new Intent(getActivity(), StepDetailActivity.class);
-        stepDetailActivityIntent.putExtra(StepDetailActivity.EXTRA_STEP, step);
+        stepDetailActivityIntent.putExtra(
+                StepDetailActivity.EXTRA_STEP_INDEX,
+                mRecipe.getSteps().indexOf(step));
+        stepDetailActivityIntent.putParcelableArrayListExtra(
+                StepDetailActivity.EXTRA_STEP_LIST,
+                (ArrayList<? extends Parcelable>) mRecipe.getSteps());
         startActivity(stepDetailActivityIntent);
     }
 

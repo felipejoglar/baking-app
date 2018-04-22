@@ -29,6 +29,10 @@ public interface StepDetailContract {
 
         void showStepDetail(Step step);
 
+        void showNextStepDetail(Step step);
+
+        void showPreviousStepDetail(Step step);
+
         void showLoading();
 
         void hideLoading();
@@ -37,5 +41,9 @@ public interface StepDetailContract {
     interface Presenter extends BasePresenter {
 
         void getStepDetail(Step step);
+
+        void getNextStepDetail(int currentStepIndex);
+
+        void getPreviousStepDetail(int currentStepIndex);
     }
 }

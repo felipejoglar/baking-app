@@ -18,6 +18,7 @@ package com.fjoglar.bakingapp.stepdetail;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -32,6 +33,10 @@ import com.fjoglar.bakingapp.data.model.Step;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Main UI for the step detail screen.
@@ -39,10 +44,14 @@ import butterknife.ButterKnife;
 public class StepDetailFragment extends Fragment implements StepDetailContract.View {
 
     @NonNull
-    private static final String ARGUMENT_STEP = "step";
+    private static final String ARGUMENT_STEP_LIST = "step_list";
+    @NonNull
+    private static final String ARGUMENT_STEP_INDEX = "step_index";
 
+    private StepNavigationClickListener mStepNavigationClickListener;
     private StepDetailContract.Presenter mStepDetailPresenter;
-    private Step mStep;
+    private List<Step> mStepList;
+    private int mStepIndex;
 
     @BindView(R.id.textview_step_detail_description)
     TextView mTextViewStepDetailDescription;
@@ -55,9 +64,11 @@ public class StepDetailFragment extends Fragment implements StepDetailContract.V
     public StepDetailFragment() {
     }
 
-    public static StepDetailFragment newInstance(@NonNull Step step) {
+    public static StepDetailFragment newInstance(@NonNull List<Step> stepList, int stepIndex) {
         Bundle arguments = new Bundle();
-        arguments.putParcelable(ARGUMENT_STEP, step);
+        arguments.putParcelableArrayList(ARGUMENT_STEP_LIST,
+                (ArrayList<? extends Parcelable>) stepList);
+        arguments.putInt(ARGUMENT_STEP_INDEX, stepIndex);
 
         StepDetailFragment stepDetailFragment = new StepDetailFragment();
         stepDetailFragment.setArguments(arguments);
@@ -66,14 +77,25 @@ public class StepDetailFragment extends Fragment implements StepDetailContract.V
 
     @Override
     public void onAttach(Context context) {
+
         super.onAttach(context);
+        // This makes sure that the host activity has implemented the StepNavigationClickListener
+        // interface. If not, it throws an exception
+        try {
+            mStepNavigationClickListener = (StepNavigationClickListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString()
+                    + " must implement StepNavigationClickListener");
+        }
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments().containsKey(ARGUMENT_STEP)) {
-            mStep = getArguments().getParcelable(ARGUMENT_STEP);
+        if (getArguments().containsKey(ARGUMENT_STEP_LIST) &&
+                getArguments().containsKey(ARGUMENT_STEP_INDEX)) {
+            mStepList = getArguments().getParcelableArrayList(ARGUMENT_STEP_LIST);
+            mStepIndex = getArguments().getInt(ARGUMENT_STEP_INDEX);
         }
     }
 
@@ -152,6 +174,16 @@ public class StepDetailFragment extends Fragment implements StepDetailContract.V
     }
 
     @Override
+    public void showNextStepDetail(Step step) {
+        mStepNavigationClickListener.onNextStepClicked(step);
+    }
+
+    @Override
+    public void showPreviousStepDetail(Step step) {
+        mStepNavigationClickListener.onPreviousStepClicked(step);
+    }
+
+    @Override
     public void showLoading() {
         mProgressBarLoading.setVisibility(View.VISIBLE);
     }
@@ -161,7 +193,24 @@ public class StepDetailFragment extends Fragment implements StepDetailContract.V
         mProgressBarLoading.setVisibility(View.GONE);
     }
 
+    @OnClick(R.id.button_step_fragment_navigate_next)
+    public void onNextStepClicked() {
+        mStepDetailPresenter.getNextStepDetail(mStepIndex);
+    }
+
+    @OnClick(R.id.button_step_fragment_navigate_previous)
+    public void onPreviousStepClicked() {
+        mStepDetailPresenter.getPreviousStepDetail(mStepIndex);
+    }
+
     private void initPresenter() {
-        mStepDetailPresenter = new StepDetailPresenter(this, mStep);
+        mStepDetailPresenter = new StepDetailPresenter(this, mStepList, mStepIndex);
+    }
+
+    public interface StepNavigationClickListener {
+
+        void onNextStepClicked(Step step);
+
+        void onPreviousStepClicked(Step step);
     }
 }
