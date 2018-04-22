@@ -36,7 +36,11 @@ limitations under the License.
         </activity>
         <activity
             android:name=".recipedetail.RecipeDetailActivity"
-            android:parentActivityName=".recipes.RecipesActivity" />
+            android:parentActivityName=".recipes.RecipesActivity"
+            android:launchMode="singleTop"/>
+        <activity
+            android:name=".stepdetail.StepDetailActivity"
+            android:parentActivityName=".recipedetail.RecipeDetailActivity" />
     </application>
 
 </manifest>
