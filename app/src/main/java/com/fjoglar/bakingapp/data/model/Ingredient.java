@@ -16,28 +16,32 @@
 
 package com.fjoglar.bakingapp.data.model;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.ForeignKey;
+import android.arch.persistence.room.PrimaryKey;
 
 import java.util.Objects;
 
-/**
- * Immutable model class for a recipe Ingredient.
- */
-public class Ingredient implements Parcelable {
+import static android.arch.persistence.room.ForeignKey.CASCADE;
 
-    @SerializedName("quantity")
-    @Expose
+/**
+ * Model class for a recipe Ingredient.
+ */
+@Entity(tableName = "ingredients",
+        foreignKeys = @ForeignKey(entity = Recipe.class,
+                parentColumns = "id",
+                childColumns = "recipe_id",
+                onDelete = CASCADE))
+public class Ingredient {
+
+    @PrimaryKey
+    private int id;
     private double quantity;
-    @SerializedName("measure")
-    @Expose
     private String measure;
-    @SerializedName("ingredient")
-    @Expose
     private String ingredient;
+    @ColumnInfo(name = "recipe_id")
+    private int recipeId;
 
     /**
      * Use this constructor to create a new Ingredient.
@@ -46,76 +50,84 @@ public class Ingredient implements Parcelable {
      * @param measure    measure of the ingredient
      * @param ingredient name of the ingredient
      */
-    public Ingredient(double quantity, String measure, String ingredient) {
+    public Ingredient(int id, double quantity, String measure, String ingredient, int recipeId) {
+        this.id = id;
         this.quantity = quantity;
         this.measure = measure;
         this.ingredient = ingredient;
+        this.recipeId = recipeId;
+    }
+
+    public Ingredient() {
+
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public double getQuantity() {
         return quantity;
     }
 
+    public void setQuantity(double quantity) {
+        this.quantity = quantity;
+    }
+
     public String getMeasure() {
         return measure;
+    }
+
+    public void setMeasure(String measure) {
+        this.measure = measure;
     }
 
     public String getIngredient() {
         return ingredient;
     }
 
+    public void setIngredient(String ingredient) {
+        this.ingredient = ingredient;
+    }
+
+    public int getRecipeId() {
+        return recipeId;
+    }
+
+    public void setRecipeId(int recipeId) {
+        this.recipeId = recipeId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Ingredient)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         Ingredient that = (Ingredient) o;
-        return getQuantity() == that.getQuantity() &&
-                Objects.equals(getMeasure(), that.getMeasure()) &&
-                Objects.equals(getIngredient(), that.getIngredient());
+        return id == that.id &&
+                Double.compare(that.quantity, quantity) == 0 &&
+                recipeId == that.recipeId &&
+                Objects.equals(measure, that.measure) &&
+                Objects.equals(ingredient, that.ingredient);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getQuantity(), getMeasure(), getIngredient());
+
+        return Objects.hash(id, quantity, measure, ingredient, recipeId);
     }
 
     @Override
     public String toString() {
         return "Ingredient{" +
-                "quantity=" + quantity +
+                "id=" + id +
+                ", quantity=" + quantity +
                 ", measure='" + measure + '\'' +
                 ", ingredient='" + ingredient + '\'' +
+                ", recipeId=" + recipeId +
                 '}';
     }
-
-    // Parcelable implementation
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeDouble(this.quantity);
-        dest.writeString(this.measure);
-        dest.writeString(this.ingredient);
-    }
-
-    protected Ingredient(Parcel in) {
-        this.quantity = in.readDouble();
-        this.measure = in.readString();
-        this.ingredient = in.readString();
-    }
-
-    public static final Creator<Ingredient> CREATOR = new Creator<Ingredient>() {
-        @Override
-        public Ingredient createFromParcel(Parcel source) {
-            return new Ingredient(source);
-        }
-
-        @Override
-        public Ingredient[] newArray(int size) {
-            return new Ingredient[size];
-        }
-    };
 }
