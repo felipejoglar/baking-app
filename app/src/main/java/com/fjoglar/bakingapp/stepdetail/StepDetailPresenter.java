@@ -17,8 +17,14 @@
 package com.fjoglar.bakingapp.stepdetail;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
+import com.fjoglar.bakingapp.DefaultObserver;
 import com.fjoglar.bakingapp.data.model.Step;
+import com.fjoglar.bakingapp.data.source.RecipesDataSource;
+import com.fjoglar.bakingapp.recipedetail.domain.GetStepsByRecipeId;
+import com.fjoglar.bakingapp.stepdetail.domain.GetStepById;
+import com.fjoglar.bakingapp.util.schedulers.BaseSchedulerProvider;
 
 import java.util.List;
 
@@ -34,49 +40,121 @@ public class StepDetailPresenter implements StepDetailContract.Presenter {
     private final StepDetailContract.View mStepDetailView;
 
     @NonNull
-    private final List<Step> mStepList;
+    private final RecipesDataSource mRecipesRepository;
 
     @NonNull
-    private final int mStepIndex;
+    private final BaseSchedulerProvider mSchedulerProvider;
 
-    public StepDetailPresenter(@NonNull StepDetailContract.View stepDetailView,
-                               @NonNull List<Step> stepList,
-                               @NonNull int stepIndex) {
+    @NonNull
+    private final int mRecipeId;
+
+    @NonNull
+    private final int mStepId;
+
+    @NonNull
+    private List<Step> mStepList;
+
+    private final GetStepsByRecipeId mGetStepsByRecipeId;
+    private final GetStepById mGetStepById;
+
+    public StepDetailPresenter(@NonNull RecipesDataSource repository,
+                               @NonNull StepDetailContract.View stepDetailView,
+                               @NonNull BaseSchedulerProvider schedulerProvider,
+                               @NonNull int recipeId,
+                               @NonNull int stepId) {
+        mRecipesRepository = repository;
         mStepDetailView = stepDetailView;
-        mStepList = stepList;
-        mStepIndex = stepIndex;
+        mSchedulerProvider = schedulerProvider;
+        mRecipeId = recipeId;
+        mStepId = stepId;
 
         mStepDetailView.setPresenter(this);
+
+        mGetStepsByRecipeId = new GetStepsByRecipeId(mRecipesRepository,
+                mSchedulerProvider.io(),
+                mSchedulerProvider.ui());
+        mGetStepById = new GetStepById(mRecipesRepository,
+                mSchedulerProvider.io(),
+                mSchedulerProvider.ui());
     }
 
     @Override
     public void subscribe() {
-        getStepDetail(mStepList.get(mStepIndex));
+        mGetStepsByRecipeId.execute(new GetRecipeStepsObserver(),
+                GetStepsByRecipeId.Params.forRecipe(mRecipeId));
+        getStepDetail(mStepId);
     }
 
     @Override
     public void unsubscribe() {
-
+        mGetStepsByRecipeId.dispose();
+        mGetStepById.dispose();
     }
 
     @Override
-    public void getStepDetail(Step step) {
+    public void getStepDetail(int stepId) {
         mStepDetailView.showLoading();
-        mStepDetailView.showStepDetail(step);
-        mStepDetailView.hideLoading();
+        mGetStepById.execute(new GetStepDetailObserver(), GetStepById.Params.forStep(stepId));
     }
 
     @Override
-    public void getNextStepDetail(int currentStepIndex) {
+    public void getNextStepDetail() {
+        int currentStepIndex = getCurrentStepIndexInList(mStepList);
         if (currentStepIndex != (mStepList.size() - 1)) {
             mStepDetailView.showNextStepDetail(mStepList.get(currentStepIndex + 1));
         }
     }
 
     @Override
-    public void getPreviousStepDetail(int currentStepIndex) {
+    public void getPreviousStepDetail() {
+        int currentStepIndex = getCurrentStepIndexInList(mStepList);
         if (currentStepIndex != 0) {
             mStepDetailView.showPreviousStepDetail(mStepList.get(currentStepIndex - 1));
+        }
+    }
+
+    private int getCurrentStepIndexInList(List<Step> stepList) {
+        for (Step step : stepList) {
+            if (step.getId() == mStepId) {
+                return mStepList.indexOf(step);
+            }
+        }
+        return 0;
+    }
+
+    private final class GetStepDetailObserver extends DefaultObserver<Step> {
+
+        @Override
+        public void onNext(Step step) {
+            mStepDetailView.showStepDetail(step);
+        }
+
+        @Override
+        public void onComplete() {
+            mStepDetailView.hideLoading();
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            Log.e(TAG, e.toString());
+        }
+    }
+
+    private final class GetRecipeStepsObserver extends DefaultObserver<List<Step>> {
+
+        @Override
+        public void onNext(List<Step> stepList) {
+            mStepList = stepList;
+        }
+
+        @Override
+        public void onComplete() {
+
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            Log.e(TAG, e.toString());
         }
     }
 }

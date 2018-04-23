@@ -29,16 +29,19 @@ import android.widget.TextView;
 
 import com.fjoglar.bakingapp.R;
 import com.fjoglar.bakingapp.data.model.Recipe;
+import com.fjoglar.bakingapp.data.model.mapper.ModelDataMapper;
 import com.fjoglar.bakingapp.data.source.RecipesRepository;
+import com.fjoglar.bakingapp.data.source.local.RecipesLocalDataSource;
+import com.fjoglar.bakingapp.data.source.local.db.RecipeDb;
 import com.fjoglar.bakingapp.data.source.remote.RecipesRemoteDataSource;
 import com.fjoglar.bakingapp.recipedetail.RecipeDetailActivity;
 import com.fjoglar.bakingapp.util.schedulers.SchedulerProvider;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class RecipesActivity extends AppCompatActivity implements RecipesContract.View,
         RecipesAdapter.RecipeClickListener {
@@ -153,7 +156,7 @@ public class RecipesActivity extends AppCompatActivity implements RecipesContrac
     @Override
     public void onRecipeClicked(Recipe recipe) {
         Intent recipeDetailActivityIntent = new Intent(this, RecipeDetailActivity.class);
-        recipeDetailActivityIntent.putExtra(RecipeDetailActivity.EXTRA_RECIPE, recipe);
+        recipeDetailActivityIntent.putExtra(RecipeDetailActivity.EXTRA_RECIPE_ID, recipe.getId());
         startActivity(recipeDetailActivityIntent);
     }
 
@@ -169,7 +172,11 @@ public class RecipesActivity extends AppCompatActivity implements RecipesContrac
 
     private void initPresenter() {
         mRecipesPresenter = new RecipesPresenter(
-                RecipesRepository.getInstance(RecipesRemoteDataSource.getInstance()),
+                RecipesRepository.getInstance(
+                        RecipesRemoteDataSource.getInstance(),
+                        RecipesLocalDataSource.getInstance(
+                                new ModelDataMapper(),
+                                RecipeDb.getInstance(this))),
                 this,
                 SchedulerProvider.getInstance());
     }

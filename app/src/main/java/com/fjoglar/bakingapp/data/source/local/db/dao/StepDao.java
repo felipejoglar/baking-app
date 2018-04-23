@@ -24,8 +24,6 @@ import com.fjoglar.bakingapp.data.model.Step;
 
 import java.util.List;
 
-import io.reactivex.Observable;
-
 @Dao
 public interface StepDao {
 
@@ -33,10 +31,10 @@ public interface StepDao {
     public void insertAll(Step... steps);
 
     @Query("SELECT * FROM steps WHERE recipe_id = (:recipeId)")
-    public Observable<List<Step>> getByRecipeId(int recipeId);
+    public List<Step> getByRecipeId(int recipeId);
 
     @Query("SELECT * FROM steps WHERE id = (:stepId)")
-    public Observable<Step> getById(int stepId);
+    public Step getById(int stepId);
 
     @Query("DELETE FROM steps")
     public void deleteAll();

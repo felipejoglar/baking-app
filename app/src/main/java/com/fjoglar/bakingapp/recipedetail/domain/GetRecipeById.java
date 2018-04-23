@@ -14,34 +14,45 @@
  * limitations under the License.
  */
 
-package com.fjoglar.bakingapp.recipes.domain;
+package com.fjoglar.bakingapp.recipedetail.domain;
 
 import com.fjoglar.bakingapp.UseCase;
 import com.fjoglar.bakingapp.data.model.Recipe;
 import com.fjoglar.bakingapp.data.source.RecipesDataSource;
-
-import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.Scheduler;
 
 /**
  * This class is an implementation of {@link UseCase} that represents a use case for
- * get the list of recipes.
+ * getting a {@link Recipe} by its id.
  */
-public class GetRecipes extends UseCase<List<Recipe>, Void> {
+public class GetRecipeById extends UseCase<Recipe, GetRecipeById.Params> {
 
     private final RecipesDataSource mRepository;
 
-    public GetRecipes(RecipesDataSource repository,
-                      Scheduler threadExecutor,
-                      Scheduler postExecutionThread) {
+    public GetRecipeById(RecipesDataSource repository,
+                         Scheduler threadExecutor,
+                         Scheduler postExecutionThread) {
         super(threadExecutor, postExecutionThread);
         mRepository = repository;
     }
 
     @Override
-    public Observable<List<Recipe>> buildUseCaseObservable(Void unused) {
-        return mRepository.getRecipes();
+    public Observable<Recipe> buildUseCaseObservable(Params params) {
+        return mRepository.getRecipebyId(params.recipeId);
+    }
+
+    public static final class Params {
+
+        private final int recipeId;
+
+        private Params(int recipeId) {
+            this.recipeId = recipeId;
+        }
+
+        public static Params forRecipe(int recipeId) {
+            return new Params(recipeId);
+        }
     }
 }

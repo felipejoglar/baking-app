@@ -19,6 +19,7 @@ package com.fjoglar.bakingapp.data.model;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
+import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 
 import java.util.Objects;
@@ -32,7 +33,8 @@ import static android.arch.persistence.room.ForeignKey.CASCADE;
         foreignKeys = @ForeignKey(entity = Recipe.class,
                 parentColumns = "id",
                 childColumns = "recipe_id",
-                onDelete = CASCADE))
+                onDelete = CASCADE),
+        indices = {@Index(value = "recipe_id")})
 public class Step {
 
     @PrimaryKey(autoGenerate = true)
@@ -48,26 +50,6 @@ public class Step {
     private String thumbnailUrl;
     @ColumnInfo(name = "recipe_id")
     private int recipeId;
-
-    /**
-     * Use this constructor to create a new Step.
-     *
-     * @param id               id of the step
-     * @param shortDescription short description of the step
-     * @param description      description of the step
-     * @param videoUrl         video URL of the step
-     * @param thumbnailUrl     thumbnail URL of the step
-     */
-    public Step(int id, int stepId, String shortDescription, String description, String videoUrl,
-                String thumbnailUrl, int recipeId) {
-        this.id = id;
-        this.stepId = stepId;
-        this.shortDescription = shortDescription;
-        this.description = description;
-        this.videoUrl = videoUrl;
-        this.thumbnailUrl = thumbnailUrl;
-        this.recipeId = recipeId;
-    }
 
     public Step() {
 

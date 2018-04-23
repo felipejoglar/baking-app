@@ -40,10 +40,10 @@ public interface StepDetailContract {
 
     interface Presenter extends BasePresenter {
 
-        void getStepDetail(Step step);
+        void getStepDetail(int stepId);
 
-        void getNextStepDetail(int currentStepIndex);
+        void getNextStepDetail();
 
-        void getPreviousStepDetail(int currentStepIndex);
+        void getPreviousStepDetail();
     }
 }

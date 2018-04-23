@@ -18,7 +18,11 @@ package com.fjoglar.bakingapp.recipedetail;
 
 import com.fjoglar.bakingapp.BasePresenter;
 import com.fjoglar.bakingapp.BaseView;
+import com.fjoglar.bakingapp.data.model.Ingredient;
 import com.fjoglar.bakingapp.data.model.Recipe;
+import com.fjoglar.bakingapp.data.model.Step;
+
+import java.util.List;
 
 /**
  * This specifies the contract between the recipe detail view and the recipe detail presenter.
@@ -29,6 +33,10 @@ public interface RecipeDetailContract {
 
         void showRecipeDetail(Recipe recipe);
 
+        void showRecipeDetailIngredients(List<Ingredient> ingredientList);
+
+        void showRecipeDetailSteps(List<Step> stepList);
+
         void showTitle(String title);
 
         void showLoading();
@@ -38,6 +46,10 @@ public interface RecipeDetailContract {
 
     interface Presenter extends BasePresenter {
 
-        void getRecipeDetail(Recipe recipe);
+        void getRecipeDetail(int recipeId);
+
+        void getRecipeIngredients(int recipeId);
+
+        void getRecipeSteps(int recipeId);
     }
 }

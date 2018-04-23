@@ -17,31 +17,30 @@
 package com.fjoglar.bakingapp.recipes.domain;
 
 import com.fjoglar.bakingapp.UseCase;
-import com.fjoglar.bakingapp.data.model.Recipe;
 import com.fjoglar.bakingapp.data.source.RecipesDataSource;
+import com.fjoglar.bakingapp.data.source.remote.jsonmodel.JsonRecipe;
 
 import java.util.List;
 
-import io.reactivex.Observable;
 import io.reactivex.Scheduler;
 
 /**
  * This class is an implementation of {@link UseCase} that represents a use case for
- * get the list of recipes.
+ * fetch the list of recipes.
  */
-public class GetRecipes extends UseCase<List<Recipe>, Void> {
+public class FetchRecipes extends UseCase<List<JsonRecipe>, Void> {
 
     private final RecipesDataSource mRepository;
 
-    public GetRecipes(RecipesDataSource repository,
-                      Scheduler threadExecutor,
-                      Scheduler postExecutionThread) {
+    public FetchRecipes(RecipesDataSource repository,
+                        Scheduler threadExecutor,
+                        Scheduler postExecutionThread) {
         super(threadExecutor, postExecutionThread);
         mRepository = repository;
     }
 
     @Override
-    public Observable<List<Recipe>> buildUseCaseObservable(Void unused) {
-        return mRepository.getRecipes();
+    public io.reactivex.Observable<List<JsonRecipe>> buildUseCaseObservable(Void unused) {
+        return mRepository.fetchRecipes();
     }
 }

@@ -22,7 +22,10 @@ import android.util.Log;
 import com.fjoglar.bakingapp.DefaultObserver;
 import com.fjoglar.bakingapp.data.model.Recipe;
 import com.fjoglar.bakingapp.data.source.RecipesDataSource;
+import com.fjoglar.bakingapp.data.source.remote.jsonmodel.JsonRecipe;
+import com.fjoglar.bakingapp.recipes.domain.FetchRecipes;
 import com.fjoglar.bakingapp.recipes.domain.GetRecipes;
+import com.fjoglar.bakingapp.recipes.domain.UpdateRecipes;
 import com.fjoglar.bakingapp.util.schedulers.BaseSchedulerProvider;
 
 import java.util.List;
@@ -40,11 +43,13 @@ public class RecipesPresenter implements RecipesContract.Presenter {
     @NonNull
     private final BaseSchedulerProvider mSchedulerProvider;
 
+    private final FetchRecipes mFetchRecipes;
+    private final UpdateRecipes mUpdateRecipes;
     private final GetRecipes mGetRecipes;
 
     public RecipesPresenter(@NonNull RecipesDataSource repository,
-                           @NonNull RecipesContract.View recipesView,
-                           @NonNull BaseSchedulerProvider schedulerProvider) {
+                            @NonNull RecipesContract.View recipesView,
+                            @NonNull BaseSchedulerProvider schedulerProvider) {
         mRecipesRepository = repository;
         mRecipesView = recipesView;
         mSchedulerProvider = schedulerProvider;
@@ -54,16 +59,37 @@ public class RecipesPresenter implements RecipesContract.Presenter {
         mGetRecipes = new GetRecipes(mRecipesRepository,
                 mSchedulerProvider.io(),
                 mSchedulerProvider.ui());
+        mFetchRecipes = new FetchRecipes(mRecipesRepository,
+                mSchedulerProvider.io(),
+                mSchedulerProvider.ui());
+        mUpdateRecipes = new UpdateRecipes(mRecipesRepository,
+                mSchedulerProvider.io(),
+                mSchedulerProvider.ui());
     }
 
     @Override
     public void subscribe() {
-        getRecipes();
+        fetchRecipes();
     }
 
     @Override
     public void unsubscribe() {
         mGetRecipes.dispose();
+        mFetchRecipes.dispose();
+        mUpdateRecipes.dispose();
+    }
+
+    @Override
+    public void fetchRecipes() {
+        mRecipesView.showLoading();
+        mFetchRecipes.execute(new FetchRecipesObserver(), null);
+    }
+
+    @Override
+    public void updateRecipes(List<JsonRecipe> jsonRecipeList) {
+        mRecipesView.showLoading();
+        mUpdateRecipes.execute(new UpdateRecipesObserver(),
+                UpdateRecipes.Params.withJsonRecipes(jsonRecipeList));
     }
 
     @Override
@@ -77,6 +103,43 @@ public class RecipesPresenter implements RecipesContract.Presenter {
             mRecipesView.showEmptyView();
         } else {
             mRecipesView.showRecipes(recipes);
+        }
+    }
+
+    private final class FetchRecipesObserver extends DefaultObserver<List<JsonRecipe>> {
+
+        @Override
+        public void onNext(List<JsonRecipe> jsonRecipeList) {
+            updateRecipes(jsonRecipeList);
+        }
+
+        @Override
+        public void onComplete() {
+            mRecipesView.hideLoading();
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            Log.e(TAG, e.toString());
+        }
+    }
+
+    private final class UpdateRecipesObserver extends DefaultObserver<Boolean> {
+
+        @Override
+        public void onNext(Boolean areUpdated) {
+            // TODO: if areUpdated is false we must show an error message.
+            getRecipes();
+        }
+
+        @Override
+        public void onComplete() {
+            mRecipesView.hideLoading();
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            Log.e(TAG, e.toString());
         }
     }
 

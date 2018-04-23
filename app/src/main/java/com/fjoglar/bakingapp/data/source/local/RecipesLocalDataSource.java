@@ -80,32 +80,33 @@ public class RecipesLocalDataSource implements RecipesDataSource {
 
     @Override
     public Observable<List<Recipe>> getRecipes() {
-        return mRecipeDb.recipeDao().getAll();
+        return Observable.just(mRecipeDb.recipeDao().getAll());
     }
 
     @Override
     public Observable<Recipe> getRecipebyId(int recipeId) {
-        return mRecipeDb.recipeDao().getById(recipeId);
+        return Observable.just(mRecipeDb.recipeDao().getById(recipeId));
     }
 
     @Override
     public Observable<List<Ingredient>> getIngredientsByRecipeId(int recipeId) {
-        return mRecipeDb.ingredientDao().getByRecipeId(recipeId);
+        return Observable.just(mRecipeDb.ingredientDao().getByRecipeId(recipeId));
     }
 
     @Override
     public Observable<List<Step>> getStepsByRecipeId(int recipeId) {
-        return mRecipeDb.stepDao().getByRecipeId(recipeId);
+        return Observable.just(mRecipeDb.stepDao().getByRecipeId(recipeId));
     }
 
     @Override
     public Observable<Step> getStepById(int stepId) {
-        return mRecipeDb.stepDao().getById(stepId);
+        return Observable.just(mRecipeDb.stepDao().getById(stepId));
     }
 
     @Override
-    public void updateRecipes(List<JsonRecipe> jsonRecipes) {
+    public Observable<Boolean> updateRecipes(List<JsonRecipe> jsonRecipes) {
         mRecipeDb.runInTransaction(() -> deleteOldAndInsertNewRecipesTransaction(jsonRecipes));
+        return Observable.just(true);
     }
 
     private void deleteOldAndInsertNewRecipesTransaction(List<JsonRecipe> jsonRecipes) {

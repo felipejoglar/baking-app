@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package com.fjoglar.bakingapp.recipes.domain;
+package com.fjoglar.bakingapp.recipedetail.domain;
+
+import android.support.annotation.NonNull;
 
 import com.fjoglar.bakingapp.UseCase;
-import com.fjoglar.bakingapp.data.model.Recipe;
+import com.fjoglar.bakingapp.data.model.Step;
 import com.fjoglar.bakingapp.data.source.RecipesDataSource;
 
 import java.util.List;
@@ -27,21 +29,35 @@ import io.reactivex.Scheduler;
 
 /**
  * This class is an implementation of {@link UseCase} that represents a use case for
- * get the list of recipes.
+ * getting a list of {@link Step} of a recipe with a solicited id.
  */
-public class GetRecipes extends UseCase<List<Recipe>, Void> {
+public class GetStepsByRecipeId extends UseCase<List<Step>, GetStepsByRecipeId.Params> {
 
     private final RecipesDataSource mRepository;
 
-    public GetRecipes(RecipesDataSource repository,
-                      Scheduler threadExecutor,
-                      Scheduler postExecutionThread) {
+    public GetStepsByRecipeId(RecipesDataSource repository,
+                              Scheduler threadExecutor,
+                              Scheduler postExecutionThread) {
         super(threadExecutor, postExecutionThread);
         mRepository = repository;
     }
 
     @Override
-    public Observable<List<Recipe>> buildUseCaseObservable(Void unused) {
-        return mRepository.getRecipes();
+    public Observable<List<Step>> buildUseCaseObservable(Params params) {
+        return mRepository.getStepsByRecipeId(params.recipeId);
+    }
+
+    public static final class Params {
+
+        private final int recipeId;
+
+        private Params(int recipeId) {
+            this.recipeId = recipeId;
+        }
+
+        @NonNull
+        public static Params forRecipe(int recipeId) {
+            return new Params(recipeId);
+        }
     }
 }

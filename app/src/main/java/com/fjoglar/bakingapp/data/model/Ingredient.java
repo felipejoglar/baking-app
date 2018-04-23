@@ -19,11 +19,10 @@ package com.fjoglar.bakingapp.data.model;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
+import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 
 import java.util.Objects;
-
-import static android.arch.persistence.room.ForeignKey.CASCADE;
 
 /**
  * Model class for a recipe Ingredient.
@@ -32,7 +31,8 @@ import static android.arch.persistence.room.ForeignKey.CASCADE;
         foreignKeys = @ForeignKey(entity = Recipe.class,
                 parentColumns = "id",
                 childColumns = "recipe_id",
-                onDelete = CASCADE))
+                onDelete = ForeignKey.CASCADE),
+        indices = {@Index(value = "recipe_id")})
 public class Ingredient {
 
     @PrimaryKey(autoGenerate = true)
@@ -42,21 +42,6 @@ public class Ingredient {
     private String ingredient;
     @ColumnInfo(name = "recipe_id")
     private int recipeId;
-
-    /**
-     * Use this constructor to create a new Ingredient.
-     *
-     * @param quantity   quantity of the ingredient
-     * @param measure    measure of the ingredient
-     * @param ingredient name of the ingredient
-     */
-    public Ingredient(int id, double quantity, String measure, String ingredient, int recipeId) {
-        this.id = id;
-        this.quantity = quantity;
-        this.measure = measure;
-        this.ingredient = ingredient;
-        this.recipeId = recipeId;
-    }
 
     public Ingredient() {
 

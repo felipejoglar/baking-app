@@ -17,8 +17,8 @@
 package com.fjoglar.bakingapp.recipes.domain;
 
 import com.fjoglar.bakingapp.UseCase;
-import com.fjoglar.bakingapp.data.model.Recipe;
 import com.fjoglar.bakingapp.data.source.RecipesDataSource;
+import com.fjoglar.bakingapp.data.source.remote.jsonmodel.JsonRecipe;
 
 import java.util.List;
 
@@ -27,21 +27,34 @@ import io.reactivex.Scheduler;
 
 /**
  * This class is an implementation of {@link UseCase} that represents a use case for
- * get the list of recipes.
+ * updating the list of recipes.
  */
-public class GetRecipes extends UseCase<List<Recipe>, Void> {
+public class UpdateRecipes extends UseCase<Boolean, UpdateRecipes.Params> {
 
     private final RecipesDataSource mRepository;
 
-    public GetRecipes(RecipesDataSource repository,
-                      Scheduler threadExecutor,
-                      Scheduler postExecutionThread) {
+    public UpdateRecipes(RecipesDataSource repository,
+                         Scheduler threadExecutor,
+                         Scheduler postExecutionThread) {
         super(threadExecutor, postExecutionThread);
         mRepository = repository;
     }
 
     @Override
-    public Observable<List<Recipe>> buildUseCaseObservable(Void unused) {
-        return mRepository.getRecipes();
+    public Observable<Boolean> buildUseCaseObservable(Params params) {
+        return mRepository.updateRecipes(params.jsonRecipes);
+    }
+
+    public static final class Params {
+
+        private final List<JsonRecipe> jsonRecipes;
+
+        private Params(List<JsonRecipe> jsonRecipes) {
+            this.jsonRecipes = jsonRecipes;
+        }
+
+        public static Params withJsonRecipes(List<JsonRecipe> jsonRecipes) {
+            return new Params(jsonRecipes);
+        }
     }
 }

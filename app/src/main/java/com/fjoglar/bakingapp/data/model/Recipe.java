@@ -18,6 +18,8 @@ package com.fjoglar.bakingapp.data.model;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import java.util.Objects;
 
@@ -25,28 +27,13 @@ import java.util.Objects;
  * Model class for a Recipe.
  */
 @Entity(tableName = "recipes")
-public class Recipe {
+public class Recipe implements Parcelable {
 
     @PrimaryKey
     private int id;
     private String name;
     private int servings;
     private String image;
-
-    /**
-     * Use this constructor to create a new Recipe.
-     *
-     * @param id       id of the recipe
-     * @param name     name of the recipe
-     * @param servings number of sering of he recipe
-     * @param image    image of the recipe
-     */
-    public Recipe(int id, String name, int servings, String image) {
-        this.id = id;
-        this.name = name;
-        this.servings = servings;
-        this.image = image;
-    }
 
     public Recipe() {
 
@@ -110,4 +97,38 @@ public class Recipe {
                 ", image='" + image + '\'' +
                 '}';
     }
+
+    // Parcelable implementation
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.id);
+        dest.writeString(this.name);
+        dest.writeInt(this.servings);
+        dest.writeString(this.image);
+    }
+
+    protected Recipe(Parcel in) {
+        this.id = in.readInt();
+        this.name = in.readString();
+        this.servings = in.readInt();
+        this.image = in.readString();
+    }
+
+    public static final Parcelable.Creator<Recipe> CREATOR = new Parcelable.Creator<Recipe>() {
+        @Override
+        public Recipe createFromParcel(Parcel source) {
+            return new Recipe(source);
+        }
+
+        @Override
+        public Recipe[] newArray(int size) {
+            return new Recipe[size];
+        }
+    };
 }

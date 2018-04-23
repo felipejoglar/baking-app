@@ -18,7 +18,6 @@ package com.fjoglar.bakingapp.stepdetail;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -30,13 +29,16 @@ import android.widget.TextView;
 
 import com.fjoglar.bakingapp.R;
 import com.fjoglar.bakingapp.data.model.Step;
+import com.fjoglar.bakingapp.data.model.mapper.ModelDataMapper;
+import com.fjoglar.bakingapp.data.source.RecipesRepository;
+import com.fjoglar.bakingapp.data.source.local.RecipesLocalDataSource;
+import com.fjoglar.bakingapp.data.source.local.db.RecipeDb;
+import com.fjoglar.bakingapp.data.source.remote.RecipesRemoteDataSource;
+import com.fjoglar.bakingapp.util.schedulers.SchedulerProvider;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Main UI for the step detail screen.
@@ -44,14 +46,14 @@ import java.util.List;
 public class StepDetailFragment extends Fragment implements StepDetailContract.View {
 
     @NonNull
-    private static final String ARGUMENT_STEP_LIST = "step_list";
+    private static final String ARGUMENT_RECIPE_ID = "recipe_id";
     @NonNull
-    private static final String ARGUMENT_STEP_INDEX = "step_index";
+    private static final String ARGUMENT_STEP_ID = "step_id";
 
     private StepNavigationClickListener mStepNavigationClickListener;
     private StepDetailContract.Presenter mStepDetailPresenter;
-    private List<Step> mStepList;
-    private int mStepIndex;
+    private int mRecipeId;
+    private int mStepId;
 
     @BindView(R.id.textview_step_detail_description)
     TextView mTextViewStepDetailDescription;
@@ -64,11 +66,10 @@ public class StepDetailFragment extends Fragment implements StepDetailContract.V
     public StepDetailFragment() {
     }
 
-    public static StepDetailFragment newInstance(@NonNull List<Step> stepList, int stepIndex) {
+    public static StepDetailFragment newInstance(int recipeId, int stepId) {
         Bundle arguments = new Bundle();
-        arguments.putParcelableArrayList(ARGUMENT_STEP_LIST,
-                (ArrayList<? extends Parcelable>) stepList);
-        arguments.putInt(ARGUMENT_STEP_INDEX, stepIndex);
+        arguments.putInt(ARGUMENT_RECIPE_ID, recipeId);
+        arguments.putInt(ARGUMENT_STEP_ID, stepId);
 
         StepDetailFragment stepDetailFragment = new StepDetailFragment();
         stepDetailFragment.setArguments(arguments);
@@ -92,10 +93,10 @@ public class StepDetailFragment extends Fragment implements StepDetailContract.V
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments().containsKey(ARGUMENT_STEP_LIST) &&
-                getArguments().containsKey(ARGUMENT_STEP_INDEX)) {
-            mStepList = getArguments().getParcelableArrayList(ARGUMENT_STEP_LIST);
-            mStepIndex = getArguments().getInt(ARGUMENT_STEP_INDEX);
+        if (getArguments().containsKey(ARGUMENT_RECIPE_ID) &&
+                getArguments().containsKey(ARGUMENT_STEP_ID)) {
+            mRecipeId = getArguments().getInt(ARGUMENT_RECIPE_ID);
+            mStepId = getArguments().getInt(ARGUMENT_STEP_ID);
         }
     }
 
@@ -167,8 +168,8 @@ public class StepDetailFragment extends Fragment implements StepDetailContract.V
                 .append(step.getId())
                 .append(": ").append(step.getShortDescription())
                 .append("\n\n- ").append(step.getDescription())
-                .append("\n\n- ").append(step.getVideoURL())
-                .append("\n- ").append(step.getThumbnailURL());
+                .append("\n\n- ").append(step.getVideoUrl())
+                .append("\n- ").append(step.getThumbnailUrl());
 
         mTextViewStepDetailDescription.setText(sb);
     }
@@ -195,16 +196,25 @@ public class StepDetailFragment extends Fragment implements StepDetailContract.V
 
     @OnClick(R.id.button_step_fragment_navigate_next)
     public void onNextStepClicked() {
-        mStepDetailPresenter.getNextStepDetail(mStepIndex);
+        mStepDetailPresenter.getNextStepDetail();
     }
 
     @OnClick(R.id.button_step_fragment_navigate_previous)
     public void onPreviousStepClicked() {
-        mStepDetailPresenter.getPreviousStepDetail(mStepIndex);
+        mStepDetailPresenter.getPreviousStepDetail();
     }
 
     private void initPresenter() {
-        mStepDetailPresenter = new StepDetailPresenter(this, mStepList, mStepIndex);
+        mStepDetailPresenter = new StepDetailPresenter(
+                RecipesRepository.getInstance(
+                        RecipesRemoteDataSource.getInstance(),
+                        RecipesLocalDataSource.getInstance(
+                                new ModelDataMapper(),
+                                RecipeDb.getInstance(getContext()))),
+                this,
+                SchedulerProvider.getInstance(),
+                mRecipeId,
+                mStepId);
     }
 
     public interface StepNavigationClickListener {

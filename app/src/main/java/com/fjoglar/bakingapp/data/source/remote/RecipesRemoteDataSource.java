@@ -124,10 +124,11 @@ public class RecipesRemoteDataSource implements RecipesDataSource {
     }
 
     @Override
-    public void updateRecipes(List<JsonRecipe> jsonRecipes) {
+    public Observable<Boolean> updateRecipes(List<JsonRecipe> jsonRecipes) {
         /**
          * Not required for the remote data source because {@link RecipesRepository} delegates
          * this function to the local data source.
          */
+        return null;
     }
 }

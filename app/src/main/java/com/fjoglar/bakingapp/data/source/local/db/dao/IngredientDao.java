@@ -24,8 +24,6 @@ import com.fjoglar.bakingapp.data.model.Ingredient;
 
 import java.util.List;
 
-import io.reactivex.Observable;
-
 @Dao
 public interface IngredientDao {
 
@@ -33,7 +31,7 @@ public interface IngredientDao {
     void insertAll(Ingredient... ingredients);
 
     @Query("SELECT * FROM ingredients WHERE recipe_id = (:recipeId)")
-    Observable<List<Ingredient>> getByRecipeId(int recipeId);
+    List<Ingredient> getByRecipeId(int recipeId);
 
     @Query("DELETE FROM ingredients")
     void deleteAll();

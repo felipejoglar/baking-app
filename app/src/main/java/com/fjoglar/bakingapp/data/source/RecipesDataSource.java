@@ -42,5 +42,5 @@ public interface RecipesDataSource {
 
     Observable<Step> getStepById(int stepId);
 
-    void updateRecipes(List<JsonRecipe> jsonRecipes);
+    Observable<Boolean> updateRecipes(List<JsonRecipe> jsonRecipes);
 }

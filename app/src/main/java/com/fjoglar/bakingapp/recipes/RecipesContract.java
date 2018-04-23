@@ -19,6 +19,7 @@ package com.fjoglar.bakingapp.recipes;
 import com.fjoglar.bakingapp.BasePresenter;
 import com.fjoglar.bakingapp.BaseView;
 import com.fjoglar.bakingapp.data.model.Recipe;
+import com.fjoglar.bakingapp.data.source.remote.jsonmodel.JsonRecipe;
 
 import java.util.List;
 
@@ -36,6 +37,10 @@ public interface RecipesContract {
     }
 
     interface Presenter extends BasePresenter {
+
+        void fetchRecipes();
+
+        void updateRecipes(List<JsonRecipe> jsonRecipeList);
 
         void getRecipes();
     }

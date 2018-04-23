@@ -24,8 +24,6 @@ import com.fjoglar.bakingapp.data.model.Recipe;
 
 import java.util.List;
 
-import io.reactivex.Observable;
-
 @Dao
 public interface RecipeDao {
 
@@ -36,10 +34,10 @@ public interface RecipeDao {
     void insertAll(Recipe... recipes);
 
     @Query("SELECT * FROM recipes")
-    Observable<List<Recipe>> getAll();
+    List<Recipe> getAll();
 
     @Query("SELECT * FROM recipes WHERE id = (:recipeId)")
-    Observable<Recipe> getById(int recipeId);
+    Recipe getById(int recipeId);
 
     @Query("DELETE FROM recipes")
     void deleteAll();

@@ -23,7 +23,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.fjoglar.bakingapp.R;
-import com.fjoglar.bakingapp.data.model.Recipe;
 
 /**
  * Displays recipe details screen.
@@ -31,7 +30,7 @@ import com.fjoglar.bakingapp.data.model.Recipe;
 public class RecipeDetailActivity extends AppCompatActivity {
 
     @NonNull
-    public static final String EXTRA_RECIPE = "recipe";
+    public static final String EXTRA_RECIPE_ID = "recipe_id";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,20 +38,20 @@ public class RecipeDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_recipe_detail);
 
         Intent intent = getIntent();
-        if (intent == null || !intent.hasExtra(EXTRA_RECIPE)) {
+        if (intent == null || !intent.hasExtra(EXTRA_RECIPE_ID)) {
             closeOnError();
             return;
         }
 
         // Get the requested recipe
-        Recipe recipe = intent.getParcelableExtra(EXTRA_RECIPE);
+        int recipeId = intent.getIntExtra(EXTRA_RECIPE_ID, 0);
 
         RecipeDetailFragment recipeDetailFragment = (RecipeDetailFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.framelayout_recipe_detail_container);
 
         if (recipeDetailFragment == null) {
             // Create a new recipe detail fragment
-            recipeDetailFragment = RecipeDetailFragment.newInstance(recipe);
+            recipeDetailFragment = RecipeDetailFragment.newInstance(recipeId);
 
             // Add the fragment to its container using a FragmentManager and a Transaction
             getSupportFragmentManager().beginTransaction()

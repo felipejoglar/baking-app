@@ -28,8 +28,6 @@ import android.widget.Toast;
 import com.fjoglar.bakingapp.R;
 import com.fjoglar.bakingapp.data.model.Step;
 
-import java.util.List;
-
 /**
  * Displays step details screen.
  */
@@ -37,11 +35,12 @@ public class StepDetailActivity extends AppCompatActivity
         implements StepDetailFragment.StepNavigationClickListener{
 
     @NonNull
-    public static final String EXTRA_STEP_LIST = "step_list";
+    public static final String EXTRA_RECIPE_ID = "recipe_id";
     @NonNull
-    public static final String EXTRA_STEP_INDEX = "step_index";
+    public static final String EXTRA_STEP_ID = "step_id";
 
-    private List<Step> mStepList;
+    private int mRecipeId;
+    private int mStepId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,22 +48,22 @@ public class StepDetailActivity extends AppCompatActivity
         setContentView(R.layout.activity_step_detail);
 
         Intent intent = getIntent();
-        if (intent == null || !intent.hasExtra(EXTRA_STEP_LIST) ||
-                !intent.hasExtra(EXTRA_STEP_INDEX)) {
+        if (intent == null || !intent.hasExtra(EXTRA_RECIPE_ID) ||
+                !intent.hasExtra(EXTRA_STEP_ID)) {
             closeOnError();
             return;
         }
 
         // Get the requested step
-        mStepList = getIntent().getParcelableArrayListExtra(EXTRA_STEP_LIST);
-        int stepIndex = getIntent().getIntExtra(EXTRA_STEP_INDEX, 0);
+        mRecipeId = getIntent().getIntExtra(EXTRA_RECIPE_ID, 0);
+        mStepId = getIntent().getIntExtra(EXTRA_STEP_ID, 0);
 
         StepDetailFragment stepDetailFragment = (StepDetailFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.framelayout_step_detail_container);
 
         if (stepDetailFragment == null) {
             // Create a new recipe detail fragment
-            stepDetailFragment = StepDetailFragment.newInstance(mStepList, stepIndex);
+            stepDetailFragment = StepDetailFragment.newInstance(mRecipeId, mStepId);
 
             // Add the fragment to its container using a FragmentManager and a Transaction
             getSupportFragmentManager().beginTransaction()
@@ -109,16 +108,16 @@ public class StepDetailActivity extends AppCompatActivity
     }
 
     public void onNextStepClicked(Step step) {
-        replaceStepFragment(mStepList.indexOf(step));
+        replaceStepFragment(step.getRecipeId(), step.getId());
     }
 
     public void onPreviousStepClicked(Step step) {
-        replaceStepFragment(mStepList.indexOf(step));
+        replaceStepFragment(step.getRecipeId(), step.getId());
     }
 
-    private void replaceStepFragment(int stepIndex) {
+    private void replaceStepFragment(int recipeId, int stepId) {
         // Set the step to show
-        StepDetailFragment stepDetailFragment = StepDetailFragment.newInstance(mStepList, stepIndex);
+        StepDetailFragment stepDetailFragment = StepDetailFragment.newInstance(recipeId, stepId);
 
         // Add the fragment to its container using a FragmentManager and a Transaction
         FragmentManager fragmentManager = getSupportFragmentManager();

@@ -19,7 +19,6 @@ package com.fjoglar.bakingapp.recipedetail;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -32,14 +31,21 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.fjoglar.bakingapp.R;
+import com.fjoglar.bakingapp.data.model.Ingredient;
 import com.fjoglar.bakingapp.data.model.Recipe;
 import com.fjoglar.bakingapp.data.model.Step;
+import com.fjoglar.bakingapp.data.model.mapper.ModelDataMapper;
+import com.fjoglar.bakingapp.data.source.RecipesRepository;
+import com.fjoglar.bakingapp.data.source.local.RecipesLocalDataSource;
+import com.fjoglar.bakingapp.data.source.local.db.RecipeDb;
+import com.fjoglar.bakingapp.data.source.remote.RecipesRemoteDataSource;
 import com.fjoglar.bakingapp.stepdetail.StepDetailActivity;
+import com.fjoglar.bakingapp.util.schedulers.SchedulerProvider;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import java.util.ArrayList;
 
 /**
  * Main UI for the recipe detail screen.
@@ -48,10 +54,10 @@ public class RecipeDetailFragment extends Fragment implements RecipeDetailContra
         StepsAdapter.OnStepClickListener {
 
     @NonNull
-    private static final String ARGUMENT_RECIPE = "recipe";
+    private static final String ARGUMENT_RECIPE_ID = "recipe_id";
 
     private RecipeDetailContract.Presenter mRecipeDetailPresenter;
-    private Recipe mRecipe;
+    private int mRecipeId;
     private IngredientsAdapter mIngredientsAdapter;
     private StepsAdapter mStepsAdapter;
 
@@ -68,9 +74,9 @@ public class RecipeDetailFragment extends Fragment implements RecipeDetailContra
     public RecipeDetailFragment() {
     }
 
-    public static RecipeDetailFragment newInstance(@NonNull Recipe recipe) {
+    public static RecipeDetailFragment newInstance(int recipeId) {
         Bundle arguments = new Bundle();
-        arguments.putParcelable(ARGUMENT_RECIPE, recipe);
+        arguments.putInt(ARGUMENT_RECIPE_ID, recipeId);
 
         RecipeDetailFragment recipeDetailFragment = new RecipeDetailFragment();
         recipeDetailFragment.setArguments(arguments);
@@ -85,8 +91,8 @@ public class RecipeDetailFragment extends Fragment implements RecipeDetailContra
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments().containsKey(ARGUMENT_RECIPE)) {
-            mRecipe = getArguments().getParcelable(ARGUMENT_RECIPE);
+        if (getArguments().containsKey(ARGUMENT_RECIPE_ID)) {
+            mRecipeId = getArguments().getInt(ARGUMENT_RECIPE_ID);
         }
     }
 
@@ -157,8 +163,17 @@ public class RecipeDetailFragment extends Fragment implements RecipeDetailContra
 
     @Override
     public void showRecipeDetail(Recipe recipe) {
-        mIngredientsAdapter.setIngredientsList(recipe.getIngredients());
-        mStepsAdapter.setStepsList(recipe.getSteps());
+
+    }
+
+    @Override
+    public void showRecipeDetailIngredients(List<Ingredient> ingredientList) {
+        mIngredientsAdapter.setIngredientsList(ingredientList);
+    }
+
+    @Override
+    public void showRecipeDetailSteps(List<Step> stepList) {
+        mStepsAdapter.setStepsList(stepList);
     }
 
     @Override
@@ -179,17 +194,21 @@ public class RecipeDetailFragment extends Fragment implements RecipeDetailContra
     @Override
     public void onStepClicked(Step step) {
         Intent stepDetailActivityIntent = new Intent(getActivity(), StepDetailActivity.class);
-        stepDetailActivityIntent.putExtra(
-                StepDetailActivity.EXTRA_STEP_INDEX,
-                mRecipe.getSteps().indexOf(step));
-        stepDetailActivityIntent.putParcelableArrayListExtra(
-                StepDetailActivity.EXTRA_STEP_LIST,
-                (ArrayList<? extends Parcelable>) mRecipe.getSteps());
+        stepDetailActivityIntent.putExtra(StepDetailActivity.EXTRA_RECIPE_ID, step.getRecipeId());
+        stepDetailActivityIntent.putExtra(StepDetailActivity.EXTRA_STEP_ID, step.getId());
         startActivity(stepDetailActivityIntent);
     }
 
     private void initPresenter() {
-        mRecipeDetailPresenter = new RecipeDetailPresenter(this, mRecipe);
+        mRecipeDetailPresenter = new RecipeDetailPresenter(
+                RecipesRepository.getInstance(
+                        RecipesRemoteDataSource.getInstance(),
+                        RecipesLocalDataSource.getInstance(
+                                new ModelDataMapper(),
+                                RecipeDb.getInstance(getContext()))),
+                this,
+                SchedulerProvider.getInstance(),
+                mRecipeId);
     }
 
     private void setUpIngredientsRecyclerView() {

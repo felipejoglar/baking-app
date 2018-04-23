@@ -28,7 +28,7 @@ import com.fjoglar.bakingapp.data.source.local.db.dao.IngredientDao;
 import com.fjoglar.bakingapp.data.source.local.db.dao.RecipeDao;
 import com.fjoglar.bakingapp.data.source.local.db.dao.StepDao;
 
-@Database(entities = {Recipe.class, Ingredient.class, Step.class}, version = 1)
+@Database(entities = {Recipe.class, Ingredient.class, Step.class}, version = 1, exportSchema = false)
 public abstract class RecipeDb extends RoomDatabase {
 
     private static final String DB_NAME = "recipe.db";

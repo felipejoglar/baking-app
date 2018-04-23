@@ -17,8 +17,19 @@
 package com.fjoglar.bakingapp.recipedetail;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
+import com.fjoglar.bakingapp.DefaultObserver;
+import com.fjoglar.bakingapp.data.model.Ingredient;
 import com.fjoglar.bakingapp.data.model.Recipe;
+import com.fjoglar.bakingapp.data.model.Step;
+import com.fjoglar.bakingapp.data.source.RecipesDataSource;
+import com.fjoglar.bakingapp.recipedetail.domain.GetIngredientsByRecipeId;
+import com.fjoglar.bakingapp.recipedetail.domain.GetRecipeById;
+import com.fjoglar.bakingapp.recipedetail.domain.GetStepsByRecipeId;
+import com.fjoglar.bakingapp.util.schedulers.BaseSchedulerProvider;
+
+import java.util.List;
 
 /**
  * {@link RecipeDetailContract.Presenter} that controls communication between views and models of
@@ -32,30 +43,126 @@ public class RecipeDetailPresenter implements RecipeDetailContract.Presenter {
     private final RecipeDetailContract.View mRecipeDetailView;
 
     @NonNull
-    private final Recipe mRecipe;
+    private final RecipesDataSource mRecipesRepository;
 
-    public RecipeDetailPresenter(@NonNull RecipeDetailContract.View recipeDetailView,
-                                 @NonNull Recipe recipe) {
+    @NonNull
+    private final BaseSchedulerProvider mSchedulerProvider;
+
+    @NonNull
+    private final int mRecipeId;
+
+    private final GetRecipeById mGetRecipeById;
+    private final GetIngredientsByRecipeId mGetIngredientsByRecipeId;
+    private final GetStepsByRecipeId mGetStepsByRecipeId;
+
+    public RecipeDetailPresenter(@NonNull RecipesDataSource repository,
+                                 @NonNull RecipeDetailContract.View recipeDetailView,
+                                 @NonNull BaseSchedulerProvider schedulerProvider,
+                                 @NonNull int recipeId) {
+        mRecipesRepository = repository;
         mRecipeDetailView = recipeDetailView;
-        mRecipe = recipe;
+        mSchedulerProvider = schedulerProvider;
+        mRecipeId = recipeId;
 
         mRecipeDetailView.setPresenter(this);
+
+        mGetRecipeById = new GetRecipeById(mRecipesRepository,
+                mSchedulerProvider.io(),
+                mSchedulerProvider.ui());
+        mGetIngredientsByRecipeId = new GetIngredientsByRecipeId(mRecipesRepository,
+                mSchedulerProvider.io(),
+                mSchedulerProvider.ui());
+        mGetStepsByRecipeId = new GetStepsByRecipeId(mRecipesRepository,
+                mSchedulerProvider.io(),
+                mSchedulerProvider.ui());
     }
 
     @Override
     public void subscribe() {
-        getRecipeDetail(mRecipe);
+        getRecipeDetail(mRecipeId);
+        getRecipeIngredients(mRecipeId);
+        getRecipeSteps(mRecipeId);
     }
 
     @Override
     public void unsubscribe() {
-
+        mGetRecipeById.dispose();
+        mGetIngredientsByRecipeId.dispose();
+        mGetStepsByRecipeId.dispose();
     }
 
     @Override
-    public void getRecipeDetail(Recipe recipe) {
+    public void getRecipeDetail(int recipeId) {
         mRecipeDetailView.showLoading();
-        mRecipeDetailView.showRecipeDetail(recipe);
-        mRecipeDetailView.hideLoading();
+        mGetRecipeById.execute(new GetRecipeDetailObserver(),
+                GetRecipeById.Params.forRecipe(recipeId));
+    }
+
+    @Override
+    public void getRecipeIngredients(int recipeId) {
+        mRecipeDetailView.showLoading();
+        mGetIngredientsByRecipeId.execute(new GetRecipeIngredientsObserver(),
+                GetIngredientsByRecipeId.Params.forRecipe(recipeId));
+    }
+
+    @Override
+    public void getRecipeSteps(int recipeId) {
+        mRecipeDetailView.showLoading();
+        mGetStepsByRecipeId.execute(new GetRecipeStepsObserver(),
+                GetStepsByRecipeId.Params.forRecipe(recipeId));
+    }
+
+    private final class GetRecipeDetailObserver extends DefaultObserver<Recipe> {
+
+        @Override
+        public void onNext(Recipe recipe) {
+
+        }
+
+        @Override
+        public void onComplete() {
+            mRecipeDetailView.hideLoading();
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            Log.e(TAG, e.toString());
+        }
+    }
+
+    private final class GetRecipeIngredientsObserver extends DefaultObserver<List<Ingredient>> {
+
+        @Override
+        public void onNext(List<Ingredient> ingredientList) {
+
+        }
+
+        @Override
+        public void onComplete() {
+            mRecipeDetailView.hideLoading();
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            Log.e(TAG, e.toString());
+        }
+    }
+
+    private final class GetRecipeStepsObserver extends DefaultObserver<List<Step>> {
+
+        @Override
+        public void onNext(List<Step> stepList) {
+
+        }
+
+        @Override
+        public void onComplete() {
+            mRecipeDetailView.hideLoading();
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            Log.e(TAG, e.toString());
+        }
     }
 }

@@ -102,7 +102,7 @@ public class RecipesRepository implements RecipesDataSource {
     }
 
     @Override
-    public void updateRecipes(List<JsonRecipe> jsonRecipes) {
-        mRecipesLocalDataSource.updateRecipes(jsonRecipes);
+    public Observable<Boolean> updateRecipes(List<JsonRecipe> jsonRecipes) {
+        return mRecipesLocalDataSource.updateRecipes(jsonRecipes);
     }
 }
