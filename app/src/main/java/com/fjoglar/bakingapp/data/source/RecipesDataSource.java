@@ -16,7 +16,10 @@
 
 package com.fjoglar.bakingapp.data.source;
 
+import com.fjoglar.bakingapp.data.model.Ingredient;
 import com.fjoglar.bakingapp.data.model.Recipe;
+import com.fjoglar.bakingapp.data.model.Step;
+import com.fjoglar.bakingapp.data.source.remote.jsonmodel.JsonRecipe;
 
 import java.util.List;
 
@@ -27,5 +30,17 @@ import io.reactivex.Observable;
  */
 public interface RecipesDataSource {
 
+    Observable<List<JsonRecipe>> fetchRecipes();
+
     Observable<List<Recipe>> getRecipes();
+
+    Observable<Recipe> getRecipebyId(int recipeId);
+
+    Observable<List<Ingredient>> getIngredientsByRecipeId(int recipeId);
+
+    Observable<List<Step>> getStepsByRecipeId(int recipeId);
+
+    Observable<Step> getStepById(int stepId);
+
+    void updateRecipes(List<JsonRecipe> jsonRecipes);
 }

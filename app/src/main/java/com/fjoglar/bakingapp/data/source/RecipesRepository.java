@@ -19,7 +19,10 @@ package com.fjoglar.bakingapp.data.source;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.fjoglar.bakingapp.data.model.Ingredient;
 import com.fjoglar.bakingapp.data.model.Recipe;
+import com.fjoglar.bakingapp.data.model.Step;
+import com.fjoglar.bakingapp.data.source.remote.jsonmodel.JsonRecipe;
 
 import java.util.List;
 
@@ -36,9 +39,14 @@ public class RecipesRepository implements RecipesDataSource {
     @NonNull
     private final RecipesDataSource mRecipesRemoteDataSource;
 
+    @NonNull
+    private final RecipesDataSource mRecipesLocalDataSource;
+
     // Prevent direct instantiation.
-    private RecipesRepository(@NonNull RecipesDataSource recipesRemoteDataSource) {
+    private RecipesRepository(@NonNull RecipesDataSource recipesRemoteDataSource,
+                              @NonNull RecipesDataSource recipesLocalDataSource) {
         mRecipesRemoteDataSource = recipesRemoteDataSource;
+        mRecipesLocalDataSource = recipesLocalDataSource;
     }
 
     /**
@@ -47,28 +55,54 @@ public class RecipesRepository implements RecipesDataSource {
      * @param recipesRemoteDataSource the backend data source
      * @return the {@link RecipesRepository} instance
      */
-    public static RecipesRepository getInstance(@NonNull RecipesDataSource recipesRemoteDataSource) {
+    public static RecipesRepository getInstance(@NonNull RecipesDataSource recipesRemoteDataSource,
+                                                @NonNull RecipesDataSource recipesLocalDataSource) {
         if (INSTANCE == null) {
-            INSTANCE = new RecipesRepository(recipesRemoteDataSource);
+            INSTANCE = new RecipesRepository(recipesRemoteDataSource, recipesLocalDataSource);
         }
         return INSTANCE;
     }
 
     /**
-     * Used to force {@link #getInstance(RecipesDataSource)} to create a new instance
-     * next time it's called.
+     * Used to force {@link #getInstance(RecipesDataSource, RecipesDataSource)} to create a new
+     * instance next time it's called.
      */
     public static void destroyInstance() {
         INSTANCE = null;
     }
 
-    /**
-     * Gets recipes from remote data source (network).
-     */
+    @Override
+    public Observable<List<JsonRecipe>> fetchRecipes() {
+        return mRecipesRemoteDataSource.fetchRecipes();
+    }
+
     @Override
     public Observable<List<Recipe>> getRecipes() {
-        // TODO: in production it would be nice to get recipes from cache, local data source (SQLite)
-        // or remote data source, whichever is available first.
-        return mRecipesRemoteDataSource.getRecipes();
+        return mRecipesLocalDataSource.getRecipes();
+    }
+
+    @Override
+    public Observable<Recipe> getRecipebyId(int recipeId) {
+        return mRecipesLocalDataSource.getRecipebyId(recipeId);
+    }
+
+    @Override
+    public Observable<List<Ingredient>> getIngredientsByRecipeId(int recipeId) {
+        return mRecipesLocalDataSource.getIngredientsByRecipeId(recipeId);
+    }
+
+    @Override
+    public Observable<List<Step>> getStepsByRecipeId(int recipeId) {
+        return mRecipesLocalDataSource.getStepsByRecipeId(recipeId);
+    }
+
+    @Override
+    public Observable<Step> getStepById(int stepId) {
+        return mRecipesLocalDataSource.getStepById(stepId);
+    }
+
+    @Override
+    public void updateRecipes(List<JsonRecipe> jsonRecipes) {
+        mRecipesLocalDataSource.updateRecipes(jsonRecipes);
     }
 }

@@ -16,7 +16,7 @@
 
 package com.fjoglar.bakingapp.data.source.remote;
 
-import com.fjoglar.bakingapp.data.model.Recipe;
+import com.fjoglar.bakingapp.data.source.remote.jsonmodel.JsonRecipe;
 
 import java.util.List;
 
@@ -29,5 +29,5 @@ import retrofit2.http.GET;
 public interface RecipeApiService {
 
     @GET("/topher/2017/May/59121517_baking/baking.json")
-    Observable<List<Recipe>> getRecipesFromJson();
+    Observable<List<JsonRecipe>> getRecipesFromJson();
 }

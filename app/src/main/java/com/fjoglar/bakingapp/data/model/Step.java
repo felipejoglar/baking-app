@@ -69,6 +69,10 @@ public class Step {
         this.recipeId = recipeId;
     }
 
+    public Step() {
+
+    }
+
     public int getId() {
         return id;
     }

@@ -18,9 +18,14 @@ package com.fjoglar.bakingapp.data.source.local;
 
 import android.support.annotation.Nullable;
 
+import com.fjoglar.bakingapp.data.model.Ingredient;
 import com.fjoglar.bakingapp.data.model.Recipe;
+import com.fjoglar.bakingapp.data.model.Step;
+import com.fjoglar.bakingapp.data.model.mapper.ModelDataMapper;
 import com.fjoglar.bakingapp.data.source.RecipesDataSource;
 import com.fjoglar.bakingapp.data.source.RecipesRepository;
+import com.fjoglar.bakingapp.data.source.local.db.RecipeDb;
+import com.fjoglar.bakingapp.data.source.remote.jsonmodel.JsonRecipe;
 
 import java.util.List;
 
@@ -34,9 +39,13 @@ public class RecipesLocalDataSource implements RecipesDataSource {
     @Nullable
     private static RecipesLocalDataSource INSTANCE = null;
 
-    // Prevent direct instantiation.
-    private RecipesLocalDataSource() {
+    private ModelDataMapper mModelDataMapper;
+    private RecipeDb mRecipeDb;
 
+    // Prevent direct instantiation.
+    private RecipesLocalDataSource(ModelDataMapper modelDataMapper, RecipeDb recipeDb) {
+        mModelDataMapper = modelDataMapper;
+        mRecipeDb = recipeDb;
     }
 
     /**
@@ -44,26 +53,73 @@ public class RecipesLocalDataSource implements RecipesDataSource {
      *
      * @return the {@link RecipesLocalDataSource} instance
      */
-    public static RecipesLocalDataSource getInstance() {
+    public static RecipesLocalDataSource getInstance(ModelDataMapper modelDataMapper,
+                                                     RecipeDb recipeDb) {
         if (INSTANCE == null) {
-            INSTANCE = new RecipesLocalDataSource();
+            INSTANCE = new RecipesLocalDataSource(modelDataMapper, recipeDb);
         }
         return INSTANCE;
     }
 
     /**
-     * Used to force {@link #getInstance()} to create a new instance next time it's called.
+     * Used to force {@link #getInstance(ModelDataMapper, RecipeDb)} to create a new instance next
+     * time it's called.
      */
     public static void destroyInstance() {
         INSTANCE = null;
     }
 
     @Override
-    public Observable<List<Recipe>> getRecipes() {
+    public Observable<List<JsonRecipe>> fetchRecipes() {
         /**
-         * Not required for the local data source because the {@link RecipesRepository} delegates
+         * Not required for the local data source because {@link RecipesRepository} delegates
          * this function to the remote data source.
          */
         return null;
+    }
+
+    @Override
+    public Observable<List<Recipe>> getRecipes() {
+        return mRecipeDb.recipeDao().getAll();
+    }
+
+    @Override
+    public Observable<Recipe> getRecipebyId(int recipeId) {
+        return mRecipeDb.recipeDao().getById(recipeId);
+    }
+
+    @Override
+    public Observable<List<Ingredient>> getIngredientsByRecipeId(int recipeId) {
+        return mRecipeDb.ingredientDao().getByRecipeId(recipeId);
+    }
+
+    @Override
+    public Observable<List<Step>> getStepsByRecipeId(int recipeId) {
+        return mRecipeDb.stepDao().getByRecipeId(recipeId);
+    }
+
+    @Override
+    public Observable<Step> getStepById(int stepId) {
+        return mRecipeDb.stepDao().getById(stepId);
+    }
+
+    @Override
+    public void updateRecipes(List<JsonRecipe> jsonRecipes) {
+        mRecipeDb.runInTransaction(() -> deleteOldAndInsertNewRecipesTransaction(jsonRecipes));
+    }
+
+    private void deleteOldAndInsertNewRecipesTransaction(List<JsonRecipe> jsonRecipes) {
+        // First delete all the current recipes in the DB.
+        mRecipeDb.recipeDao().deleteAll();
+        // Then insert the new downloaded recipes.
+        for (JsonRecipe jsonRecipe : jsonRecipes) {
+            mRecipeDb.recipeDao().insert(mModelDataMapper.transformRecipe(jsonRecipe));
+            mRecipeDb.ingredientDao().insertAll(
+                    (Ingredient) mModelDataMapper.transformIngredientList(jsonRecipe.getIngredients(),
+                            jsonRecipe.getId()));
+            mRecipeDb.stepDao().insertAll(
+                    (Step) mModelDataMapper.transformStepList(jsonRecipe.getSteps(),
+                            jsonRecipe.getId()));
+        }
     }
 }

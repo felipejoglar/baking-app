@@ -18,8 +18,11 @@ package com.fjoglar.bakingapp.data.source.remote;
 
 import android.support.annotation.Nullable;
 
+import com.fjoglar.bakingapp.data.model.Ingredient;
 import com.fjoglar.bakingapp.data.model.Recipe;
+import com.fjoglar.bakingapp.data.model.Step;
 import com.fjoglar.bakingapp.data.source.RecipesDataSource;
+import com.fjoglar.bakingapp.data.source.remote.jsonmodel.JsonRecipe;
 
 import java.util.List;
 
@@ -71,7 +74,60 @@ public class RecipesRemoteDataSource implements RecipesDataSource {
     }
 
     @Override
-    public Observable<List<Recipe>> getRecipes() {
+    public Observable<List<JsonRecipe>> fetchRecipes() {
         return mRecipeApiService.getRecipesFromJson();
+    }
+
+    @Override
+    public Observable<List<Recipe>> getRecipes() {
+        /**
+         * Not required for the remote data source because {@link RecipesRepository} delegates
+         * this function to the local data source.
+         */
+        return null;
+    }
+
+    @Override
+    public Observable<Recipe> getRecipebyId(int recipeId) {
+        /**
+         * Not required for the remote data source because {@link RecipesRepository} delegates
+         * this function to the local data source.
+         */
+        return null;
+    }
+
+    @Override
+    public Observable<List<Ingredient>> getIngredientsByRecipeId(int recipeId) {
+        /**
+         * Not required for the remote data source because {@link RecipesRepository} delegates
+         * this function to the local data source.
+         */
+        return null;
+    }
+
+    @Override
+    public Observable<List<Step>> getStepsByRecipeId(int recipeId) {
+        /**
+         * Not required for the remote data source because {@link RecipesRepository} delegates
+         * this function to the local data source.
+         */
+        return null;
+    }
+
+    @Override
+    public Observable<Step> getStepById(int stepId) {
+        /**
+         * Not required for the remote data source because {@link RecipesRepository} delegates
+         * this function to the local data source.
+         */
+        return null;
+    }
+
+    @Override
+    public void updateRecipes(List<JsonRecipe> jsonRecipes) {
+        /**
+         * Not required for the remote data source because {@link RecipesRepository} delegates
+         * this function to the local data source.
+         */
     }
 }
