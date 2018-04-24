@@ -30,6 +30,9 @@ public interface StepDao {
     @Insert
     public void insertAll(Step... steps);
 
+    @Insert
+    public void insert(Step step);
+
     @Query("SELECT * FROM steps WHERE recipe_id = (:recipeId)")
     public List<Step> getByRecipeId(int recipeId);
 

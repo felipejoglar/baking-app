@@ -30,6 +30,9 @@ public interface IngredientDao {
     @Insert
     void insertAll(Ingredient... ingredients);
 
+    @Insert
+    void insert(Ingredient ingredient);
+
     @Query("SELECT * FROM ingredients WHERE recipe_id = (:recipeId)")
     List<Ingredient> getByRecipeId(int recipeId);
 

@@ -23,10 +23,6 @@ import com.fjoglar.bakingapp.data.source.remote.jsonmodel.JsonIngredient;
 import com.fjoglar.bakingapp.data.source.remote.jsonmodel.JsonRecipe;
 import com.fjoglar.bakingapp.data.source.remote.jsonmodel.JsonStep;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-
 /**
  * Mapper class used to transformRecipe {@link JsonRecipe}, {@link JsonIngredient} and {@link JsonStep}
  * (loaded from the network) to {@link Recipe}, {@link Ingredient} and {@link Step} (for offline
@@ -57,27 +53,6 @@ public class ModelDataMapper {
     }
 
     /**
-     * Transform a Collection of {@link JsonRecipe} into a Collection of {@link Recipe}.
-     *
-     * @param jsonRecipesCollection Objects to be transformed.
-     * @return List of {@link Recipe}.
-     */
-    public Collection<Recipe> transformRecipeList(Collection<JsonRecipe> jsonRecipesCollection) {
-        Collection<Recipe> recipesCollection;
-
-        if (jsonRecipesCollection != null && !jsonRecipesCollection.isEmpty()) {
-            recipesCollection = new ArrayList<>();
-            for (JsonRecipe jsonRecipe : jsonRecipesCollection) {
-                recipesCollection.add(transformRecipe(jsonRecipe));
-            }
-        } else {
-            recipesCollection = Collections.emptyList();
-        }
-
-        return recipesCollection;
-    }
-
-    /**
      * Transform a {@link JsonIngredient} into an {@link Ingredient}.
      *
      * @param jsonIngredient Object to be transformed.
@@ -95,29 +70,6 @@ public class ModelDataMapper {
         ingredient.setRecipeId(recipeId);
 
         return ingredient;
-    }
-
-    /**
-     * Transform a Collection of {@link JsonIngredient} into a Collection of {@link Ingredient}.
-     *
-     * @param jsonIngredientsCollection Objects to be transformed.
-     * @param recipeId                  id of the recipe to which these ingredients belong to.
-     * @return List of {@link Ingredient}.
-     */
-    public Collection<Ingredient> transformIngredientList(
-            Collection<JsonIngredient> jsonIngredientsCollection, int recipeId) {
-        Collection<Ingredient> ingredientsCollection;
-
-        if (jsonIngredientsCollection != null && !jsonIngredientsCollection.isEmpty()) {
-            ingredientsCollection = new ArrayList<>();
-            for (JsonIngredient jsonIngredient : jsonIngredientsCollection) {
-                ingredientsCollection.add(transformIngredient(jsonIngredient, recipeId));
-            }
-        } else {
-            ingredientsCollection = Collections.emptyList();
-        }
-
-        return ingredientsCollection;
     }
 
     /**
@@ -140,28 +92,5 @@ public class ModelDataMapper {
         step.setRecipeId(recipeId);
 
         return step;
-    }
-
-    /**
-     * Transform a Collection of {@link JsonStep} into a Collection of {@link Step}.
-     *
-     * @param jsonStepsCollection Objects to be transformed.
-     * @param recipeId            id of the recipe to which these steps belong to.
-     * @return List of {@link Step}.
-     */
-    public Collection<Step> transformStepList(Collection<JsonStep> jsonStepsCollection,
-                                              int recipeId) {
-        Collection<Step> stepsCollection;
-
-        if (jsonStepsCollection != null && !jsonStepsCollection.isEmpty()) {
-            stepsCollection = new ArrayList<>();
-            for (JsonStep jsonStep : jsonStepsCollection) {
-                stepsCollection.add(transformStep(jsonStep, recipeId));
-            }
-        } else {
-            stepsCollection = Collections.emptyList();
-        }
-
-        return stepsCollection;
     }
 }
