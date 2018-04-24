@@ -116,7 +116,7 @@ public class RecipeDetailPresenter implements RecipeDetailContract.Presenter {
 
         @Override
         public void onNext(Recipe recipe) {
-
+            mRecipeDetailView.showRecipeDetail(recipe);
         }
 
         @Override
@@ -134,7 +134,7 @@ public class RecipeDetailPresenter implements RecipeDetailContract.Presenter {
 
         @Override
         public void onNext(List<Ingredient> ingredientList) {
-
+            mRecipeDetailView.showRecipeDetailIngredients(ingredientList);
         }
 
         @Override
@@ -152,7 +152,7 @@ public class RecipeDetailPresenter implements RecipeDetailContract.Presenter {
 
         @Override
         public void onNext(List<Step> stepList) {
-
+            mRecipeDetailView.showRecipeDetailSteps(stepList);
         }
 
         @Override
