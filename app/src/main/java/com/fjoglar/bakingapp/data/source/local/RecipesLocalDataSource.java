@@ -25,7 +25,9 @@ import com.fjoglar.bakingapp.data.model.mapper.ModelDataMapper;
 import com.fjoglar.bakingapp.data.source.RecipesDataSource;
 import com.fjoglar.bakingapp.data.source.RecipesRepository;
 import com.fjoglar.bakingapp.data.source.local.db.RecipeDb;
+import com.fjoglar.bakingapp.data.source.remote.jsonmodel.JsonIngredient;
 import com.fjoglar.bakingapp.data.source.remote.jsonmodel.JsonRecipe;
+import com.fjoglar.bakingapp.data.source.remote.jsonmodel.JsonStep;
 
 import java.util.List;
 
@@ -80,33 +82,36 @@ public class RecipesLocalDataSource implements RecipesDataSource {
 
     @Override
     public Observable<List<Recipe>> getRecipes() {
-        return Observable.just(mRecipeDb.recipeDao().getAll());
+        return Observable.fromCallable(() -> mRecipeDb.recipeDao().getAll());
     }
 
     @Override
     public Observable<Recipe> getRecipebyId(int recipeId) {
-        return Observable.just(mRecipeDb.recipeDao().getById(recipeId));
+        return Observable.fromCallable(() -> mRecipeDb.recipeDao().getById(recipeId));
     }
 
     @Override
     public Observable<List<Ingredient>> getIngredientsByRecipeId(int recipeId) {
-        return Observable.just(mRecipeDb.ingredientDao().getByRecipeId(recipeId));
+        return Observable.fromCallable(() -> mRecipeDb.ingredientDao().getByRecipeId(recipeId));
     }
 
     @Override
     public Observable<List<Step>> getStepsByRecipeId(int recipeId) {
-        return Observable.just(mRecipeDb.stepDao().getByRecipeId(recipeId));
+        return Observable.fromCallable(() -> mRecipeDb.stepDao().getByRecipeId(recipeId));
     }
 
     @Override
     public Observable<Step> getStepById(int stepId) {
-        return Observable.just(mRecipeDb.stepDao().getById(stepId));
+        return Observable.fromCallable(() -> mRecipeDb.stepDao().getById(stepId));
     }
 
     @Override
     public Observable<Boolean> updateRecipes(List<JsonRecipe> jsonRecipes) {
-        mRecipeDb.runInTransaction(() -> deleteOldAndInsertNewRecipesTransaction(jsonRecipes));
-        return Observable.just(true);
+        return Observable.fromCallable(() -> {
+            mRecipeDb.runInTransaction(() ->
+                    deleteOldAndInsertNewRecipesTransaction(jsonRecipes));
+            return true;
+        });
     }
 
     private void deleteOldAndInsertNewRecipesTransaction(List<JsonRecipe> jsonRecipes) {
@@ -115,12 +120,14 @@ public class RecipesLocalDataSource implements RecipesDataSource {
         // Then insert the new downloaded recipes.
         for (JsonRecipe jsonRecipe : jsonRecipes) {
             mRecipeDb.recipeDao().insert(mModelDataMapper.transformRecipe(jsonRecipe));
-            mRecipeDb.ingredientDao().insertAll(
-                    (Ingredient) mModelDataMapper.transformIngredientList(jsonRecipe.getIngredients(),
-                            jsonRecipe.getId()));
-            mRecipeDb.stepDao().insertAll(
-                    (Step) mModelDataMapper.transformStepList(jsonRecipe.getSteps(),
-                            jsonRecipe.getId()));
+            for (JsonIngredient jsonIngredient : jsonRecipe.getIngredients()) {
+                mRecipeDb.ingredientDao().insert(
+                        mModelDataMapper.transformIngredient(jsonIngredient, jsonRecipe.getId()));
+            }
+            for (JsonStep jsonStep : jsonRecipe.getSteps()) {
+                mRecipeDb.stepDao().insert(
+                        mModelDataMapper.transformStep(jsonStep, jsonRecipe.getId()));
+            }
         }
     }
 }
