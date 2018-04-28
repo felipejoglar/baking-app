@@ -25,6 +25,7 @@ import android.widget.TextView;
 
 import com.fjoglar.bakingapp.R;
 import com.fjoglar.bakingapp.data.model.Step;
+import com.fjoglar.bakingapp.util.ui.UiUtils;
 
 import java.util.List;
 
@@ -57,7 +58,9 @@ public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         final Step step = mStepsList.get(position);
-        holder.mTextViewRecipeStepDescription.setText(step.getShortDescription());
+        holder.mTextViewItemStepNumber.setText(String.valueOf(step.getStepId()));
+        holder.mTextViewItemStepNumber.setTextColor(UiUtils.getStepColor(step.getStepId()));
+        holder.mTextViewItemStepDescription.setText(step.getShortDescription());
         holder.itemView.setOnClickListener(v -> mOnStepClickListener.onStepClicked(step));
     }
 
@@ -84,8 +87,10 @@ public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.ViewHolder> 
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.textview_recipe_step_description)
-        TextView mTextViewRecipeStepDescription;
+        @BindView(R.id.textview_item_step_number)
+        TextView mTextViewItemStepNumber;
+        @BindView(R.id.textview_item_step_description)
+        TextView mTextViewItemStepDescription;
 
         ViewHolder(View itemView) {
             super(itemView);

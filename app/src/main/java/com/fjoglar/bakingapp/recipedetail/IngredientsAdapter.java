@@ -16,6 +16,7 @@
 
 package com.fjoglar.bakingapp.recipedetail;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,11 +25,12 @@ import android.widget.TextView;
 
 import com.fjoglar.bakingapp.R;
 import com.fjoglar.bakingapp.data.model.Ingredient;
+import com.fjoglar.bakingapp.util.ui.UiUtils;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import java.util.List;
 
 /**
  * Adapter that manages a collection of {@link Ingredient}.
@@ -43,8 +45,9 @@ public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.
 
     }
 
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_ingredient, parent, false);
 
@@ -52,15 +55,9 @@ public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         final Ingredient ingredient = mIngredientsList.get(position);
-        StringBuilder sb = new StringBuilder()
-                .append(ingredient.getIngredient())
-                .append(": ")
-                .append(ingredient.getQuantity())
-                .append(ingredient.getMeasure());
-
-        holder.mTextViewRecipeDetailIngredient.setText(sb.toString());
+        holder.mTextViewRecipeDetailIngredient.setText(UiUtils.formatIngredientText(ingredient));
     }
 
     @Override

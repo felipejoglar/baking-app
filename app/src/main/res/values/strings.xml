@@ -20,4 +20,10 @@ limitations under the License.
     <string name="recipes_empty_view_message">There are no recipes to show</string>
     <string name="recipe_detail_error_message">No recipe to show</string>
     <string name="recipes_image_banner_content_description">Recipe image banner</string>
+
+    <!-- RECIPE DETAIL-->
+    <string name="recipe_detail_servings">%1$d people</string>
+    <string name="recipe_detail_image_banner_content_description">Recipe image banner</string>
+    <string name="recipe_detail_ingredients_title">- INGREDIENTS -</string>
+    <string name="recipe_detail_steps_title">- STEPS -</string>
 </resources>

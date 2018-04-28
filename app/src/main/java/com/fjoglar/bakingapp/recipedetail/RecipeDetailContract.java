@@ -37,7 +37,7 @@ public interface RecipeDetailContract {
 
         void showRecipeDetailSteps(List<Step> stepList);
 
-        void showTitle(String title);
+        void showTitle(String title, int servings);
 
         void showLoading();
 

@@ -117,6 +117,7 @@ public class RecipeDetailPresenter implements RecipeDetailContract.Presenter {
         @Override
         public void onNext(Recipe recipe) {
             mRecipeDetailView.showRecipeDetail(recipe);
+            mRecipeDetailView.showTitle(recipe.getName(), recipe.getServings());
         }
 
         @Override

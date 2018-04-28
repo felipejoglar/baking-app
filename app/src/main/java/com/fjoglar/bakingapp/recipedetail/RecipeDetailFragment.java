@@ -28,7 +28,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.fjoglar.bakingapp.R;
 import com.fjoglar.bakingapp.data.model.Ingredient;
@@ -41,6 +43,7 @@ import com.fjoglar.bakingapp.data.source.local.db.RecipeDb;
 import com.fjoglar.bakingapp.data.source.remote.RecipesRemoteDataSource;
 import com.fjoglar.bakingapp.stepdetail.StepDetailActivity;
 import com.fjoglar.bakingapp.util.schedulers.SchedulerProvider;
+import com.fjoglar.bakingapp.util.ui.UiUtils;
 
 import java.util.List;
 
@@ -61,6 +64,12 @@ public class RecipeDetailFragment extends Fragment implements RecipeDetailContra
     private IngredientsAdapter mIngredientsAdapter;
     private StepsAdapter mStepsAdapter;
 
+    @BindView(R.id.imageview_recipe_detail_banner)
+    ImageView mImageViewRecipeDetailBanner;
+    @BindView(R.id.textview_recipe_detail_name)
+    TextView mTextViewRecipeDetailName;
+    @BindView(R.id.textview_recipe_detail_servings)
+    TextView mTextViewRecipeDetailServings;
     @BindView(R.id.recyclerview_recipe_detail_ingredients)
     RecyclerView mRecyclerViewRecipeDetailIngredients;
     @BindView(R.id.recyclerview_recipe_detail_steps)
@@ -163,7 +172,7 @@ public class RecipeDetailFragment extends Fragment implements RecipeDetailContra
 
     @Override
     public void showRecipeDetail(Recipe recipe) {
-
+        mImageViewRecipeDetailBanner.setImageResource(UiUtils.getImageResource(recipe.getId()));
     }
 
     @Override
@@ -177,8 +186,9 @@ public class RecipeDetailFragment extends Fragment implements RecipeDetailContra
     }
 
     @Override
-    public void showTitle(String title) {
-        // TODO: Update fragment title.
+    public void showTitle(String title, int servings) {
+        mTextViewRecipeDetailName.setText(title);
+        mTextViewRecipeDetailServings.setText(getString(R.string.recipe_detail_servings, servings));
     }
 
     @Override
@@ -217,9 +227,6 @@ public class RecipeDetailFragment extends Fragment implements RecipeDetailContra
         mRecyclerViewRecipeDetailIngredients.setHasFixedSize(true);
         mRecyclerViewRecipeDetailIngredients.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerViewRecipeDetailIngredients.setNestedScrollingEnabled(false);
-        mRecyclerViewRecipeDetailIngredients.addItemDecoration(
-                new DividerItemDecoration(mRecyclerViewRecipeDetailIngredients.getContext(),
-                        DividerItemDecoration.VERTICAL));
         mRecyclerViewRecipeDetailIngredients.setAdapter(mIngredientsAdapter);
     }
 
