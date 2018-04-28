@@ -26,4 +26,9 @@ limitations under the License.
     <string name="recipe_detail_image_banner_content_description">Recipe image banner</string>
     <string name="recipe_detail_ingredients_title">- INGREDIENTS -</string>
     <string name="recipe_detail_steps_title">- STEPS -</string>
+
+    <!-- STEP DETAIL-->
+    <string name="step_detail_image_banner_content_description">Step image banner</string>
+    <string name="step_detail_navigate_next">Next</string>
+    <string name="step_detail_navigate_previous">Prev</string>
 </resources>

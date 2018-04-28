@@ -24,6 +24,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -35,6 +36,7 @@ import com.fjoglar.bakingapp.data.source.local.RecipesLocalDataSource;
 import com.fjoglar.bakingapp.data.source.local.db.RecipeDb;
 import com.fjoglar.bakingapp.data.source.remote.RecipesRemoteDataSource;
 import com.fjoglar.bakingapp.util.schedulers.SchedulerProvider;
+import com.fjoglar.bakingapp.util.ui.UiUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -55,6 +57,10 @@ public class StepDetailFragment extends Fragment implements StepDetailContract.V
     private int mRecipeId;
     private int mStepId;
 
+    @BindView(R.id.imageview_step_detail_banner)
+    ImageView mImageViewStepDetailBanner;
+    @BindView(R.id.textview_step_detail_title)
+    TextView mTextViewStepDetailTitle;
     @BindView(R.id.textview_step_detail_description)
     TextView mTextViewStepDetailDescription;
     @BindView(R.id.progressbar_loading)
@@ -164,14 +170,9 @@ public class StepDetailFragment extends Fragment implements StepDetailContract.V
 
     @Override
     public void showStepDetail(Step step) {
-        StringBuilder sb = new StringBuilder()
-                .append(step.getId())
-                .append(": ").append(step.getShortDescription())
-                .append("\n\n- ").append(step.getDescription())
-                .append("\n\n- ").append(step.getVideoUrl())
-                .append("\n- ").append(step.getThumbnailUrl());
-
-        mTextViewStepDetailDescription.setText(sb);
+        mImageViewStepDetailBanner.setImageResource(UiUtils.getImageResource(step.getRecipeId()));
+        mTextViewStepDetailTitle.setText(step.getShortDescription());
+        mTextViewStepDetailDescription.setText(step.getDescription());
     }
 
     @Override
@@ -194,12 +195,12 @@ public class StepDetailFragment extends Fragment implements StepDetailContract.V
         mProgressBarLoading.setVisibility(View.GONE);
     }
 
-    @OnClick(R.id.button_step_fragment_navigate_next)
+    @OnClick(R.id.button_step_detail_navigate_next)
     public void onNextStepClicked() {
         mStepDetailPresenter.getNextStepDetail();
     }
 
-    @OnClick(R.id.button_step_fragment_navigate_previous)
+    @OnClick(R.id.button_step_detail_navigate_previous)
     public void onPreviousStepClicked() {
         mStepDetailPresenter.getPreviousStepDetail();
     }

@@ -45,10 +45,7 @@ public class StepDetailPresenter implements StepDetailContract.Presenter {
     @NonNull
     private final BaseSchedulerProvider mSchedulerProvider;
 
-    @NonNull
     private final int mRecipeId;
-
-    @NonNull
     private final int mStepId;
 
     @NonNull
@@ -60,8 +57,8 @@ public class StepDetailPresenter implements StepDetailContract.Presenter {
     public StepDetailPresenter(@NonNull RecipesDataSource repository,
                                @NonNull StepDetailContract.View stepDetailView,
                                @NonNull BaseSchedulerProvider schedulerProvider,
-                               @NonNull int recipeId,
-                               @NonNull int stepId) {
+                               int recipeId,
+                               int stepId) {
         mRecipesRepository = repository;
         mStepDetailView = stepDetailView;
         mSchedulerProvider = schedulerProvider;

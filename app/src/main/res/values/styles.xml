@@ -23,4 +23,7 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="ButtonAccent" parent="Theme.AppCompat.Light">
+        <item name="colorControlHighlight">@color/colorAccent</item>
+    </style>
 </resources>
