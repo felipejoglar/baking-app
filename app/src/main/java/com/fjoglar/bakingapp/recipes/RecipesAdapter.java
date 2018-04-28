@@ -22,15 +22,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.fjoglar.bakingapp.R;
 import com.fjoglar.bakingapp.data.model.Recipe;
+import com.fjoglar.bakingapp.util.ui.UiUtils;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import java.util.List;
 
 
 /**
@@ -61,8 +63,9 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.ViewHold
         // TODO: by now, we just put the name of the recipe. It must show a more visually appealing
         // layout.
         final Recipe recipe = mRecipesList.get(position);
-        holder.mTextViewRecipeItemName.setText(recipe.getName());
-        holder.mCardviewItemRecipeCard
+        holder.mImageViewItemRecipeBanner.setImageResource(UiUtils.getImageResource(recipe.getId()));
+        holder.mTextViewItemRecipeName.setText(recipe.getName());
+        holder.mCardViewItemRecipeCard
                 .setOnClickListener(v -> mOnClickListener.onRecipeClicked(recipe));
     }
 
@@ -89,10 +92,13 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.ViewHold
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.textview_recipe_item_name)
-        TextView mTextViewRecipeItemName;
         @BindView(R.id.cardview_item_recipe_card)
-        CardView mCardviewItemRecipeCard;
+        CardView mCardViewItemRecipeCard;
+        @BindView(R.id.imageview_item_recipe_banner)
+        ImageView mImageViewItemRecipeBanner;
+        @BindView(R.id.textview_item_recipe_name)
+        TextView mTextViewItemRecipeName;
+
 
         ViewHolder(View itemView) {
             super(itemView);
