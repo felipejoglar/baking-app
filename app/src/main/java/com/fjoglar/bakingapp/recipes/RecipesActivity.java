@@ -22,6 +22,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -53,6 +54,8 @@ public class RecipesActivity extends AppCompatActivity implements RecipesContrac
     private List<Recipe> mRecipesList;
     private boolean mForceLoad;
 
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
     @BindView(R.id.recyclerview_recipes)
     RecyclerView mRecyclerViewRecipes;
     @BindView(R.id.progressbar_loading)
@@ -66,6 +69,8 @@ public class RecipesActivity extends AppCompatActivity implements RecipesContrac
         setContentView(R.layout.activity_recipes);
 
         ButterKnife.bind(this);
+
+        setSupportActionBar(mToolbar);
 
         // By default we force the load of the data from the repository.
         mForceLoad = true;

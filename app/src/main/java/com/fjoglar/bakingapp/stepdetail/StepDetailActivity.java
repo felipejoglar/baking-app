@@ -21,12 +21,17 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.fjoglar.bakingapp.R;
 import com.fjoglar.bakingapp.data.model.Step;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Displays step details screen.
@@ -42,10 +47,20 @@ public class StepDetailActivity extends AppCompatActivity
     private int mRecipeId;
     private int mStepId;
 
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_step_detail);
+
+        ButterKnife.bind(this);
+
+        setSupportActionBar(mToolbar);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowHomeEnabled(true);
 
         Intent intent = getIntent();
         if (intent == null || !intent.hasExtra(EXTRA_RECIPE_ID) ||

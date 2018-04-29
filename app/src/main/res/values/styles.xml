@@ -16,7 +16,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -26,4 +26,8 @@
     <style name="ButtonAccent" parent="Theme.AppCompat.Light">
         <item name="colorControlHighlight">@color/colorAccent</item>
     </style>
+
+    <style name="Toolbar" parent="ThemeOverlay.AppCompat.Dark.ActionBar" >
+        <item name="android:fontFamily">@font/lobster_regular</item>
+        </style>
 </resources>
