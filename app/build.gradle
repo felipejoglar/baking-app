@@ -60,6 +60,7 @@ ext {
     gsonVersion = '2.8.2'
     retrofitVersion = '2.4.0'
     adapterRxJava2Version = '2.4.0'
+    exoplayerVersion = '2.7.3'
 
     jUnitVersion = '4.12'
     espressoCoreVersion = '3.0.1'
@@ -92,6 +93,9 @@ dependencies {
     implementation "com.squareup.retrofit2:retrofit:${retrofitVersion}"
     implementation "com.squareup.retrofit2:converter-gson:${retrofitVersion}"
     implementation "com.squareup.retrofit2:adapter-rxjava2:${adapterRxJava2Version}"
+
+    // Exoplayer
+    implementation "com.google.android.exoplayer:exoplayer:${exoplayerVersion}"
 
     // Testing Libraries
     testImplementation "junit:junit:${jUnitVersion}"

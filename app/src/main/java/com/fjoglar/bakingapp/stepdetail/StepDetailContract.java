@@ -33,6 +33,10 @@ public interface StepDetailContract {
 
         void showPreviousStepDetail(Step step);
 
+        void loadVideo(String videoUrl);
+
+        void showVideoPlaceholder(Step step);
+
         void showLoading();
 
         void hideLoading();

@@ -110,6 +110,16 @@ public class StepDetailPresenter implements StepDetailContract.Presenter {
         }
     }
 
+    private void loadVideo(Step step) {
+        if (!step.getVideoUrl().isEmpty()) {
+            mStepDetailView.loadVideo(step.getVideoUrl());
+        } else if (!step.getThumbnailUrl().isEmpty()) {
+            mStepDetailView.loadVideo(step.getThumbnailUrl());
+        } else {
+            mStepDetailView.showVideoPlaceholder(step);
+        }
+    }
+
     private int getCurrentStepIndexInList(List<Step> stepList) {
         for (Step step : stepList) {
             if (step.getId() == mStepId) {
@@ -124,6 +134,7 @@ public class StepDetailPresenter implements StepDetailContract.Presenter {
         @Override
         public void onNext(Step step) {
             mStepDetailView.showStepDetail(step);
+            loadVideo(step);
         }
 
         @Override

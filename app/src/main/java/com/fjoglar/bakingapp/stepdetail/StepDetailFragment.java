@@ -17,6 +17,8 @@
 package com.fjoglar.bakingapp.stepdetail;
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,7 +26,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -37,6 +38,15 @@ import com.fjoglar.bakingapp.data.source.local.db.RecipeDb;
 import com.fjoglar.bakingapp.data.source.remote.RecipesRemoteDataSource;
 import com.fjoglar.bakingapp.util.schedulers.SchedulerProvider;
 import com.fjoglar.bakingapp.util.ui.UiUtils;
+import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.DefaultRenderersFactory;
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,11 +64,12 @@ public class StepDetailFragment extends Fragment implements StepDetailContract.V
 
     private StepNavigationClickListener mStepNavigationClickListener;
     private StepDetailContract.Presenter mStepDetailPresenter;
+    private SimpleExoPlayer mSimpleExoPlayer;
     private int mRecipeId;
     private int mStepId;
 
-    @BindView(R.id.imageview_step_detail_banner)
-    ImageView mImageViewStepDetailBanner;
+    @BindView(R.id.simpleexoplayerview_step_detail_video)
+    PlayerView mSimpleExoPlayerViewStepDetailVideo;
     @BindView(R.id.textview_step_detail_title)
     TextView mTextViewStepDetailTitle;
     @BindView(R.id.textview_step_detail_description)
@@ -135,12 +146,14 @@ public class StepDetailFragment extends Fragment implements StepDetailContract.V
     public void onResume() {
         super.onResume();
         mStepDetailPresenter.subscribe();
+        initializePlayer();
     }
 
     @Override
     public void onPause() {
         super.onPause();
         mStepDetailPresenter.unsubscribe();
+        releasePlayer();
     }
 
     @Override
@@ -170,9 +183,22 @@ public class StepDetailFragment extends Fragment implements StepDetailContract.V
 
     @Override
     public void showStepDetail(Step step) {
-        mImageViewStepDetailBanner.setImageResource(UiUtils.getImageResource(step.getRecipeId()));
         mTextViewStepDetailTitle.setText(step.getShortDescription());
         mTextViewStepDetailDescription.setText(step.getDescription());
+    }
+
+    @Override
+    public void loadVideo(String videoUrl) {
+        Uri uri = Uri.parse(videoUrl);
+        MediaSource mediaSource = buildMediaSource(uri);
+        mSimpleExoPlayer.prepare(mediaSource, true, false);
+        mSimpleExoPlayer.setPlayWhenReady(true);
+    }
+
+    @Override
+    public void showVideoPlaceholder(Step step) {
+        mSimpleExoPlayerViewStepDetailVideo.setDefaultArtwork(BitmapFactory.decodeResource(
+                getResources(), UiUtils.getImageResource(step.getRecipeId())));
     }
 
     @Override
@@ -216,6 +242,42 @@ public class StepDetailFragment extends Fragment implements StepDetailContract.V
                 SchedulerProvider.getInstance(),
                 mRecipeId,
                 mStepId);
+    }
+
+    /**
+     * Initialize ExoPlayer.
+     */
+    private void initializePlayer() {
+        if (mSimpleExoPlayer == null) {
+            mSimpleExoPlayer = ExoPlayerFactory.newSimpleInstance(
+                    new DefaultRenderersFactory(getContext()),
+                    new DefaultTrackSelector(), new DefaultLoadControl());
+
+            mSimpleExoPlayerViewStepDetailVideo.setPlayer(mSimpleExoPlayer);
+        }
+    }
+
+    /**
+     * Release ExoPlayer.
+     */
+    private void releasePlayer() {
+        if (mSimpleExoPlayer != null) {
+            mSimpleExoPlayer.stop();
+            mSimpleExoPlayer.release();
+            mSimpleExoPlayer = null;
+        }
+    }
+
+    /**
+     * Builds the MediaSource
+     *
+     * @param uri The URI of the video to play
+     * @return The built MediaSource
+     */
+    private MediaSource buildMediaSource(Uri uri) {
+        return new ExtractorMediaSource.Factory(
+                new DefaultHttpDataSourceFactory("baking_app")).
+                createMediaSource(uri);
     }
 
     public interface StepNavigationClickListener {
