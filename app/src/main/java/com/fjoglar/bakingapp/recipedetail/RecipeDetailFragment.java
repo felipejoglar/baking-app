@@ -17,7 +17,6 @@
 package com.fjoglar.bakingapp.recipedetail;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -41,7 +40,6 @@ import com.fjoglar.bakingapp.data.source.RecipesRepository;
 import com.fjoglar.bakingapp.data.source.local.RecipesLocalDataSource;
 import com.fjoglar.bakingapp.data.source.local.db.RecipeDb;
 import com.fjoglar.bakingapp.data.source.remote.RecipesRemoteDataSource;
-import com.fjoglar.bakingapp.stepdetail.StepDetailActivity;
 import com.fjoglar.bakingapp.util.schedulers.SchedulerProvider;
 import com.fjoglar.bakingapp.util.ui.UiUtils;
 
@@ -59,6 +57,7 @@ public class RecipeDetailFragment extends Fragment implements RecipeDetailContra
     @NonNull
     private static final String ARGUMENT_RECIPE_ID = "recipe_id";
 
+    private OnItemClickListener mOnItemClickListener;
     private RecipeDetailContract.Presenter mRecipeDetailPresenter;
     private int mRecipeId;
     private IngredientsAdapter mIngredientsAdapter;
@@ -95,6 +94,14 @@ public class RecipeDetailFragment extends Fragment implements RecipeDetailContra
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        // This makes sure that the host activity has implemented the StepNavigationClickListener
+        // interface. If not, it throws an exception
+        try {
+            mOnItemClickListener = (OnItemClickListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString()
+                    + " must implement OnItemClickListener");
+        }
     }
 
     @Override
@@ -203,10 +210,7 @@ public class RecipeDetailFragment extends Fragment implements RecipeDetailContra
 
     @Override
     public void onStepClicked(Step step) {
-        Intent stepDetailActivityIntent = new Intent(getActivity(), StepDetailActivity.class);
-        stepDetailActivityIntent.putExtra(StepDetailActivity.EXTRA_RECIPE_ID, step.getRecipeId());
-        stepDetailActivityIntent.putExtra(StepDetailActivity.EXTRA_STEP_ID, step.getId());
-        startActivity(stepDetailActivityIntent);
+        mOnItemClickListener.onItemClicked(step);
     }
 
     private void initPresenter() {
@@ -240,5 +244,10 @@ public class RecipeDetailFragment extends Fragment implements RecipeDetailContra
                 new DividerItemDecoration(mRecyclerViewRecipeDetailSteps.getContext(),
                         DividerItemDecoration.VERTICAL));
         mRecyclerViewRecipeDetailSteps.setAdapter(mStepsAdapter);
+    }
+
+    public interface OnItemClickListener {
+
+        void onItemClicked(Step step);
     }
 }

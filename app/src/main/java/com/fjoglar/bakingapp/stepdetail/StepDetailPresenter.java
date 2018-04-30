@@ -79,7 +79,9 @@ public class StepDetailPresenter implements StepDetailContract.Presenter {
     public void subscribe() {
         mGetStepsByRecipeId.execute(new GetRecipeStepsObserver(),
                 GetStepsByRecipeId.Params.forRecipe(mRecipeId));
-        getStepDetail(mStepId);
+        if (mStepId != 0) {
+            getStepDetail(mStepId);
+        }
     }
 
     @Override
@@ -153,6 +155,10 @@ public class StepDetailPresenter implements StepDetailContract.Presenter {
         @Override
         public void onNext(List<Step> stepList) {
             mStepList = stepList;
+            if (mStepId == 0) {
+                mStepDetailView.showStepDetail(mStepList.get(0));
+                loadVideo(mStepList.get(0));
+            }
         }
 
         @Override

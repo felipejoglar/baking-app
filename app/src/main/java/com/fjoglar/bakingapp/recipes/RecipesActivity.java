@@ -166,7 +166,6 @@ public class RecipesActivity extends AppCompatActivity implements RecipesContrac
     }
 
     private void setUpRecyclerView() {
-        // TODO: this must be a GridLayoutManager when we are in tablet mode.
         mRecipesAdapter = new RecipesAdapter(this);
 
         mRecyclerViewRecipes.setHasFixedSize(true);

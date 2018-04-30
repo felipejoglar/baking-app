@@ -19,12 +19,16 @@ package com.fjoglar.bakingapp.recipedetail;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.Toast;
 
 import com.fjoglar.bakingapp.R;
+import com.fjoglar.bakingapp.data.model.Step;
+import com.fjoglar.bakingapp.stepdetail.StepDetailActivity;
+import com.fjoglar.bakingapp.stepdetail.StepDetailFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,10 +36,14 @@ import butterknife.ButterKnife;
 /**
  * Displays recipe details screen.
  */
-public class RecipeDetailActivity extends AppCompatActivity {
+public class RecipeDetailActivity extends AppCompatActivity implements
+        RecipeDetailFragment.OnItemClickListener,
+        StepDetailFragment.StepNavigationClickListener {
 
     @NonNull
     public static final String EXTRA_RECIPE_ID = "recipe_id";
+
+    private boolean mTwoPane;
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
@@ -73,6 +81,25 @@ public class RecipeDetailActivity extends AppCompatActivity {
                     .add(R.id.framelayout_recipe_detail_container, recipeDetailFragment)
                     .commit();
         }
+
+        if (findViewById(R.id.linearlayout_recipe_detail_tablet_container) != null) {
+            mTwoPane = true;
+
+            StepDetailFragment stepDetailFragment = (StepDetailFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.framelayout_step_detail_container);
+
+            if (stepDetailFragment == null) {
+                // Create a new recipe detail fragment
+                stepDetailFragment = StepDetailFragment.newInstance(recipeId, 0);
+
+                // Add the fragment to its container using a FragmentManager and a Transaction
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.framelayout_step_detail_container, stepDetailFragment)
+                        .commit();
+            }
+        } else {
+            mTwoPane = false;
+        }
     }
 
     @Override
@@ -100,8 +127,41 @@ public class RecipeDetailActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+    @Override
+    public void onItemClicked(Step step) {
+        if (mTwoPane) {
+            replaceStepFragment(step.getRecipeId(), step.getId());
+        } else {
+            Intent stepDetailActivityIntent = new Intent(this, StepDetailActivity.class);
+            stepDetailActivityIntent.putExtra(StepDetailActivity.EXTRA_RECIPE_ID, step.getRecipeId());
+            stepDetailActivityIntent.putExtra(StepDetailActivity.EXTRA_STEP_ID, step.getId());
+            startActivity(stepDetailActivityIntent);
+        }
+    }
+
+    @Override
+    public void onNextStepClicked(Step step) {
+        // Not used. Needed for tablet layout compatibility.
+    }
+
+    @Override
+    public void onPreviousStepClicked(Step step) {
+        // Not used. Needed for tablet layout compatibility.
+    }
+
     private void closeOnError() {
         finish();
         Toast.makeText(getApplicationContext(), R.string.recipe_detail_error_message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void replaceStepFragment(int recipeId, int stepId) {
+        // Set the step to show
+        StepDetailFragment stepDetailFragment = StepDetailFragment.newInstance(recipeId, stepId);
+
+        // Replace the fragment to its container using a FragmentManager and a Transaction
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.framelayout_step_detail_container, stepDetailFragment)
+                .commit();
     }
 }
