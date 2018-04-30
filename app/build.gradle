@@ -61,6 +61,7 @@ ext {
     retrofitVersion = '2.4.0'
     adapterRxJava2Version = '2.4.0'
     exoplayerVersion = '2.7.3'
+    picassoVersion = '2.71828'
 
     jUnitVersion = '4.12'
     espressoCoreVersion = '3.0.1'
@@ -98,6 +99,9 @@ dependencies {
     // Exoplayer
     implementation "com.google.android.exoplayer:exoplayer:${exoplayerVersion}"
 
+    // Picasso
+    implementation "com.squareup.picasso:picasso:${picassoVersion}"
+    
     // Testing Libraries
     testImplementation "junit:junit:${jUnitVersion}"
     androidTestImplementation("com.android.support.test.espresso:espresso-core:${espressoCoreVersion}", {

@@ -42,6 +42,7 @@ import com.fjoglar.bakingapp.data.source.local.db.RecipeDb;
 import com.fjoglar.bakingapp.data.source.remote.RecipesRemoteDataSource;
 import com.fjoglar.bakingapp.util.schedulers.SchedulerProvider;
 import com.fjoglar.bakingapp.util.ui.UiUtils;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -179,7 +180,9 @@ public class RecipeDetailFragment extends Fragment implements RecipeDetailContra
 
     @Override
     public void showRecipeDetail(Recipe recipe) {
-        mImageViewRecipeDetailBanner.setImageResource(UiUtils.getImageResource(recipe.getId()));
+        Picasso.get()
+                .load(UiUtils.getImageResource(recipe.getId()))
+                .into(mImageViewRecipeDetailBanner);
     }
 
     @Override

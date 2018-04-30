@@ -28,6 +28,7 @@ import android.widget.TextView;
 import com.fjoglar.bakingapp.R;
 import com.fjoglar.bakingapp.data.model.Recipe;
 import com.fjoglar.bakingapp.util.ui.UiUtils;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -60,10 +61,10 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        // TODO: by now, we just put the name of the recipe. It must show a more visually appealing
-        // layout.
         final Recipe recipe = mRecipesList.get(position);
-        holder.mImageViewItemRecipeBanner.setImageResource(UiUtils.getImageResource(recipe.getId()));
+        Picasso.get()
+                .load(UiUtils.getImageResource(recipe.getId()))
+                .into(holder.mImageViewItemRecipeBanner);
         holder.mTextViewItemRecipeName.setText(recipe.getName());
         holder.mCardViewItemRecipeCard
                 .setOnClickListener(v -> mOnClickListener.onRecipeClicked(recipe));
