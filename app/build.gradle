@@ -101,7 +101,7 @@ dependencies {
 
     // Picasso
     implementation "com.squareup.picasso:picasso:${picassoVersion}"
-    
+
     // Testing Libraries
     testImplementation "junit:junit:${jUnitVersion}"
     androidTestImplementation("com.android.support.test.espresso:espresso-core:${espressoCoreVersion}", {
