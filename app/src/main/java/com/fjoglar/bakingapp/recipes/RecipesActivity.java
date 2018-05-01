@@ -65,6 +65,7 @@ public class RecipesActivity extends AppCompatActivity implements RecipesContrac
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipes);
 
