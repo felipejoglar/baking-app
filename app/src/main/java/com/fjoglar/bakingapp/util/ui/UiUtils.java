@@ -21,6 +21,8 @@ import android.graphics.Color;
 import com.fjoglar.bakingapp.R;
 import com.fjoglar.bakingapp.data.model.Ingredient;
 
+import java.util.List;
+
 /**
  * Provides different types of imagery and text formatting for UI presentation.
  */
@@ -93,6 +95,20 @@ public class UiUtils {
             default:
                 return Color.parseColor("#607D8B");
         }
+    }
+
+    /**
+     * Format a list of ingredients into a single String
+     *
+     * @param ingredients the list of ingredients
+     * @return the formatted string
+     */
+    public static String formatIngredientList(List<Ingredient> ingredients) {
+        StringBuilder sb = new StringBuilder();
+        for (Ingredient ingredient : ingredients) {
+            sb.append(formatIngredientText(ingredient)).append("\n");
+        }
+        return sb.toString();
     }
 
     /**

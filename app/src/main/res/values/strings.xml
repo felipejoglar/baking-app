@@ -21,14 +21,18 @@ limitations under the License.
     <string name="recipe_detail_error_message">No recipe to show</string>
     <string name="recipes_image_banner_content_description">Recipe image banner</string>
 
-    <!-- RECIPE DETAIL-->
+    <!-- RECIPE DETAIL -->
     <string name="recipe_detail_servings">%1$d people</string>
     <string name="recipe_detail_image_banner_content_description">Recipe image banner</string>
     <string name="recipe_detail_ingredients_title">- INGREDIENTS -</string>
     <string name="recipe_detail_steps_title">- STEPS -</string>
 
-    <!-- STEP DETAIL-->
+    <!-- STEP DETAIL -->
     <string name="step_detail_image_banner_content_description">Step image banner</string>
     <string name="step_detail_navigate_next">Next</string>
     <string name="step_detail_navigate_previous">Prev</string>
+
+    <!-- WIDGET -->
+    <string name="widget_recipe_select_recipe">Select a recipe:</string>
+    <string name="widget_recipe_empty_view">No recipes to choose :-(</string>
 </resources>

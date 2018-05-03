@@ -14,9 +14,13 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<resources>
-    <color name="colorPrimary">#38312D</color>
-    <color name="colorPrimaryDark">#2B2522</color>
-    <color name="colorAccent">#F99C95</color>
-    <color name="colorPrimaryTransparent">#8038312D</color>
-</resources>
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:configure="com.fjoglar.bakingapp.widget.RecipeWidgetProviderConfigureActivity"
+    android:initialKeyguardLayout="@layout/widget_recipe_provider"
+    android:initialLayout="@layout/widget_recipe_provider"
+    android:minHeight="180dp"
+    android:minWidth="250dp"
+    android:previewImage="@drawable/example_appwidget_preview"
+    android:resizeMode="horizontal|vertical"
+    android:updatePeriodMillis="21600000"
+    android:widgetCategory="home_screen" />

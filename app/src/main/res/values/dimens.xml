@@ -15,8 +15,5 @@
  limitations under the License.
 -->
 <resources>
-    <color name="colorPrimary">#38312D</color>
-    <color name="colorPrimaryDark">#2B2522</color>
-    <color name="colorAccent">#F99C95</color>
-    <color name="colorPrimaryTransparent">#8038312D</color>
+    <dimen name="widget_margin">8dp</dimen>
 </resources>
