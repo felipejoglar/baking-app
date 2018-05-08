@@ -20,6 +20,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.test.espresso.idling.CountingIdlingResource;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -64,6 +65,9 @@ public class RecipeDetailFragment extends Fragment implements RecipeDetailContra
     private IngredientsAdapter mIngredientsAdapter;
     private StepsAdapter mStepsAdapter;
 
+    @Nullable
+    static CountingIdlingResource sIdlingResource;
+
     @BindView(R.id.imageview_recipe_detail_banner)
     ImageView mImageViewRecipeDetailBanner;
     @BindView(R.id.textview_recipe_detail_name)
@@ -83,7 +87,9 @@ public class RecipeDetailFragment extends Fragment implements RecipeDetailContra
     public RecipeDetailFragment() {
     }
 
-    public static RecipeDetailFragment newInstance(int recipeId) {
+    public static RecipeDetailFragment newInstance(int recipeId,
+                                                   CountingIdlingResource idlingResource) {
+        sIdlingResource = idlingResource;
         Bundle arguments = new Bundle();
         arguments.putInt(ARGUMENT_RECIPE_ID, recipeId);
 
@@ -225,7 +231,8 @@ public class RecipeDetailFragment extends Fragment implements RecipeDetailContra
                                 RecipeDb.getInstance(getContext()))),
                 this,
                 SchedulerProvider.getInstance(),
-                mRecipeId);
+                mRecipeId,
+                sIdlingResource);
     }
 
     private void setUpIngredientsRecyclerView() {

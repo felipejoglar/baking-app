@@ -19,6 +19,9 @@ package com.fjoglar.bakingapp.recipedetail;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+import android.support.test.espresso.idling.CountingIdlingResource;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -44,6 +47,11 @@ public class RecipeDetailActivity extends AppCompatActivity implements
     public static final String EXTRA_RECIPE_ID = "recipe_id";
 
     private boolean mTwoPane;
+
+    // This idling resource will be used by Espresso to wait for and synchronize with
+    // background threads.
+    @Nullable
+    CountingIdlingResource mIdlingResource = new CountingIdlingResource("GLOBAL");
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
@@ -74,7 +82,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements
 
         if (recipeDetailFragment == null) {
             // Create a new recipe detail fragment
-            recipeDetailFragment = RecipeDetailFragment.newInstance(recipeId);
+            recipeDetailFragment = RecipeDetailFragment.newInstance(recipeId, mIdlingResource);
 
             // Add the fragment to its container using a FragmentManager and a Transaction
             getSupportFragmentManager().beginTransaction()
@@ -163,5 +171,10 @@ public class RecipeDetailActivity extends AppCompatActivity implements
         fragmentManager.beginTransaction()
                 .replace(R.id.framelayout_step_detail_container, stepDetailFragment)
                 .commit();
+    }
+
+    @VisibleForTesting
+    public CountingIdlingResource getCountingIdlingResource() {
+        return mIdlingResource;
     }
 }

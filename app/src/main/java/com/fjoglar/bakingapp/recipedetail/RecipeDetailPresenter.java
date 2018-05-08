@@ -17,6 +17,8 @@
 package com.fjoglar.bakingapp.recipedetail;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.test.espresso.idling.CountingIdlingResource;
 import android.util.Log;
 
 import com.fjoglar.bakingapp.DefaultObserver;
@@ -51,6 +53,9 @@ public class RecipeDetailPresenter implements RecipeDetailContract.Presenter {
     @NonNull
     private final int mRecipeId;
 
+    @Nullable
+    private final CountingIdlingResource mIdlingResource;
+
     private final GetRecipeById mGetRecipeById;
     private final GetIngredientsByRecipeId mGetIngredientsByRecipeId;
     private final GetStepsByRecipeId mGetStepsByRecipeId;
@@ -58,11 +63,13 @@ public class RecipeDetailPresenter implements RecipeDetailContract.Presenter {
     public RecipeDetailPresenter(@NonNull RecipesDataSource repository,
                                  @NonNull RecipeDetailContract.View recipeDetailView,
                                  @NonNull BaseSchedulerProvider schedulerProvider,
-                                 @NonNull int recipeId) {
+                                 @NonNull int recipeId,
+                                 @Nullable CountingIdlingResource idlingResource) {
         mRecipesRepository = repository;
         mRecipeDetailView = recipeDetailView;
         mSchedulerProvider = schedulerProvider;
         mRecipeId = recipeId;
+        mIdlingResource = idlingResource;
 
         mRecipeDetailView.setPresenter(this);
 
@@ -93,6 +100,7 @@ public class RecipeDetailPresenter implements RecipeDetailContract.Presenter {
 
     @Override
     public void getRecipeDetail(int recipeId) {
+        mIdlingResource.increment();
         mRecipeDetailView.showLoading();
         mGetRecipeById.execute(new GetRecipeDetailObserver(),
                 GetRecipeById.Params.forRecipe(recipeId));
@@ -100,6 +108,7 @@ public class RecipeDetailPresenter implements RecipeDetailContract.Presenter {
 
     @Override
     public void getRecipeIngredients(int recipeId) {
+        mIdlingResource.increment();
         mRecipeDetailView.showLoading();
         mGetIngredientsByRecipeId.execute(new GetRecipeIngredientsObserver(),
                 GetIngredientsByRecipeId.Params.forRecipe(recipeId));
@@ -107,6 +116,7 @@ public class RecipeDetailPresenter implements RecipeDetailContract.Presenter {
 
     @Override
     public void getRecipeSteps(int recipeId) {
+        mIdlingResource.increment();
         mRecipeDetailView.showLoading();
         mGetStepsByRecipeId.execute(new GetRecipeStepsObserver(),
                 GetStepsByRecipeId.Params.forRecipe(recipeId));
@@ -123,11 +133,13 @@ public class RecipeDetailPresenter implements RecipeDetailContract.Presenter {
         @Override
         public void onComplete() {
             mRecipeDetailView.hideLoading();
+            mIdlingResource.decrement();
         }
 
         @Override
         public void onError(Throwable e) {
             Log.e(TAG, e.toString());
+            mIdlingResource.decrement();
         }
     }
 
@@ -141,11 +153,13 @@ public class RecipeDetailPresenter implements RecipeDetailContract.Presenter {
         @Override
         public void onComplete() {
             mRecipeDetailView.hideLoading();
+            mIdlingResource.decrement();
         }
 
         @Override
         public void onError(Throwable e) {
             Log.e(TAG, e.toString());
+            mIdlingResource.decrement();
         }
     }
 
@@ -159,11 +173,13 @@ public class RecipeDetailPresenter implements RecipeDetailContract.Presenter {
         @Override
         public void onComplete() {
             mRecipeDetailView.hideLoading();
+            mIdlingResource.decrement();
         }
 
         @Override
         public void onError(Throwable e) {
             Log.e(TAG, e.toString());
+            mIdlingResource.decrement();
         }
     }
 }
