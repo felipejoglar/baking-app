@@ -50,7 +50,7 @@ public class RecipesActivityTest {
      * blocks of Junit tests.
      */
     @Rule
-    public ActivityTestRule<RecipesActivity> mTasksActivityTestRule =
+    public ActivityTestRule<RecipesActivity> mActivityTestRule =
             new ActivityTestRule<RecipesActivity>(RecipesActivity.class);
 
     /**
@@ -62,7 +62,7 @@ public class RecipesActivityTest {
     @Before
     public void setUp() throws Exception {
         IdlingRegistry.getInstance().register(
-                mTasksActivityTestRule.getActivity().getCountingIdlingResource());
+                mActivityTestRule.getActivity().getCountingIdlingResource());
     }
 
     @Test
@@ -71,7 +71,7 @@ public class RecipesActivityTest {
     }
 
     @Test
-    public void backFromTasksScreen_ExitsApp() {
+    public void backFromRecipesScreen_ExitsApp() {
         // From the recipes screen, press back should exit the app.
         assertPressingBackExitsApp();
     }
@@ -82,7 +82,7 @@ public class RecipesActivityTest {
     @After
     public void tearDown() throws Exception {
         IdlingRegistry.getInstance().unregister(
-                mTasksActivityTestRule.getActivity().getCountingIdlingResource());
+                mActivityTestRule.getActivity().getCountingIdlingResource());
     }
 
     private void assertPressingBackExitsApp() {

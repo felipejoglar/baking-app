@@ -45,7 +45,7 @@ public class RecipesPresenter implements RecipesContract.Presenter {
     @NonNull
     private final BaseSchedulerProvider mSchedulerProvider;
 
-    @NonNull
+    @Nullable
     private final CountingIdlingResource mIdlingResource;
 
     private final FetchRecipes mFetchRecipes;
