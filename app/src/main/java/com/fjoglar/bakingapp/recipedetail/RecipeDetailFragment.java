@@ -138,8 +138,6 @@ public class RecipeDetailFragment extends Fragment implements RecipeDetailContra
 
         setUpIngredientsRecyclerView();
         setUpStepsRecyclerView();
-
-        initPresenter();
     }
 
     @Override
@@ -150,6 +148,7 @@ public class RecipeDetailFragment extends Fragment implements RecipeDetailContra
     @Override
     public void onResume() {
         super.onResume();
+        initPresenter();
         mRecipeDetailPresenter.subscribe();
     }
 
