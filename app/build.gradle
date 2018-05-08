@@ -64,7 +64,8 @@ ext {
     picassoVersion = '2.71828'
 
     jUnitVersion = '4.12'
-    espressoCoreVersion = '3.0.1'
+    espressoCoreVersion = '3.0.2'
+    androidJUnitVersion = '1.0.2'
 }
 
 dependencies {
@@ -107,4 +108,9 @@ dependencies {
     androidTestImplementation("com.android.support.test.espresso:espresso-core:${espressoCoreVersion}", {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+    androidTestImplementation "com.android.support:support-annotations:${supportLibVersion}"
+    androidTestImplementation "com.android.support.test.espresso:espresso-core:${espressoCoreVersion}"
+    androidTestImplementation "com.android.support.test:runner:${androidJUnitVersion}"
+    androidTestImplementation "com.android.support.test:rules:${androidJUnitVersion}"
+    implementation "com.android.support.test.espresso:espresso-idling-resource:${espressoCoreVersion}"
 }

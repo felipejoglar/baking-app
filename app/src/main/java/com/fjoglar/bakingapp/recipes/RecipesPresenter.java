@@ -17,6 +17,8 @@
 package com.fjoglar.bakingapp.recipes;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.test.espresso.idling.CountingIdlingResource;
 import android.util.Log;
 
 import com.fjoglar.bakingapp.DefaultObserver;
@@ -43,16 +45,21 @@ public class RecipesPresenter implements RecipesContract.Presenter {
     @NonNull
     private final BaseSchedulerProvider mSchedulerProvider;
 
+    @NonNull
+    private final CountingIdlingResource mIdlingResource;
+
     private final FetchRecipes mFetchRecipes;
     private final UpdateRecipes mUpdateRecipes;
     private final GetRecipes mGetRecipes;
 
     public RecipesPresenter(@NonNull RecipesDataSource repository,
                             @NonNull RecipesContract.View recipesView,
-                            @NonNull BaseSchedulerProvider schedulerProvider) {
+                            @NonNull BaseSchedulerProvider schedulerProvider,
+                            @Nullable CountingIdlingResource idlingResource) {
         mRecipesRepository = repository;
         mRecipesView = recipesView;
         mSchedulerProvider = schedulerProvider;
+        mIdlingResource = idlingResource;
 
         mRecipesView.setPresenter(this);
 
@@ -81,12 +88,14 @@ public class RecipesPresenter implements RecipesContract.Presenter {
 
     @Override
     public void fetchRecipes() {
+        mIdlingResource.increment();
         mRecipesView.showLoading();
         mFetchRecipes.execute(new FetchRecipesObserver(), null);
     }
 
     @Override
     public void updateRecipes(List<JsonRecipe> jsonRecipeList) {
+        mIdlingResource.increment();
         mRecipesView.showLoading();
         mUpdateRecipes.execute(new UpdateRecipesObserver(),
                 UpdateRecipes.Params.withJsonRecipes(jsonRecipeList));
@@ -94,6 +103,7 @@ public class RecipesPresenter implements RecipesContract.Presenter {
 
     @Override
     public void getRecipes() {
+        mIdlingResource.increment();
         mRecipesView.showLoading();
         mGetRecipes.execute(new RecipesObserver(), null);
     }
@@ -116,11 +126,13 @@ public class RecipesPresenter implements RecipesContract.Presenter {
         @Override
         public void onComplete() {
             mRecipesView.hideLoading();
+            mIdlingResource.decrement();
         }
 
         @Override
         public void onError(Throwable e) {
             Log.e(TAG, e.toString());
+            mIdlingResource.decrement();
         }
     }
 
@@ -135,11 +147,13 @@ public class RecipesPresenter implements RecipesContract.Presenter {
         @Override
         public void onComplete() {
             mRecipesView.hideLoading();
+            mIdlingResource.decrement();
         }
 
         @Override
         public void onError(Throwable e) {
             Log.e(TAG, e.toString());
+            mIdlingResource.decrement();
         }
     }
 
@@ -153,11 +167,13 @@ public class RecipesPresenter implements RecipesContract.Presenter {
         @Override
         public void onComplete() {
             mRecipesView.hideLoading();
+            mIdlingResource.decrement();
         }
 
         @Override
         public void onError(Throwable e) {
             Log.e(TAG, e.toString());
+            mIdlingResource.decrement();
         }
     }
 }

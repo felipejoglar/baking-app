@@ -19,6 +19,9 @@ package com.fjoglar.bakingapp.recipes;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+import android.support.test.espresso.idling.CountingIdlingResource;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -53,6 +56,11 @@ public class RecipesActivity extends AppCompatActivity implements RecipesContrac
     private RecipesAdapter mRecipesAdapter;
     private List<Recipe> mRecipesList;
     private boolean mForceLoad;
+
+    // This idling resource will be used by Espresso to wait for and synchronize with
+    // background threads.
+    @Nullable
+    CountingIdlingResource mIdlingResource = new CountingIdlingResource("GLOBAL");
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
@@ -183,6 +191,12 @@ public class RecipesActivity extends AppCompatActivity implements RecipesContrac
                                 new ModelDataMapper(),
                                 RecipeDb.getInstance(this))),
                 this,
-                SchedulerProvider.getInstance());
+                SchedulerProvider.getInstance(),
+                mIdlingResource);
+    }
+
+    @VisibleForTesting
+    public CountingIdlingResource getCountingIdlingResource() {
+        return mIdlingResource;
     }
 }
