@@ -18,6 +18,7 @@ package com.fjoglar.bakingapp.recipes;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
@@ -50,11 +51,13 @@ public class RecipesActivity extends AppCompatActivity implements RecipesContrac
         RecipesAdapter.RecipeClickListener {
 
     private static final String SAVED_STATE_RECIPES_LIST = "recipes_list";
+    private static final String SAVED_STATE_RECYCLER_VIEW_POSITION = "recycler-view-position";
 
     private RecipesContract.Presenter mRecipesPresenter;
     private RecipesAdapter mRecipesAdapter;
     private List<Recipe> mRecipesList;
     private boolean mForceLoad;
+    private Parcelable mRecyclerViewRecipesState;
 
     // This idling resource will be used by Espresso to wait for and synchronize with
     // background threads.
@@ -85,7 +88,8 @@ public class RecipesActivity extends AppCompatActivity implements RecipesContrac
         if (savedInstanceState != null) {
             // Restore value of members from saved state
             mRecipesList = savedInstanceState.getParcelableArrayList(SAVED_STATE_RECIPES_LIST);
-
+            mRecyclerViewRecipesState =
+                    savedInstanceState.getParcelable(SAVED_STATE_RECYCLER_VIEW_POSITION);
             // As we get the list from saved state we don't need to load the data
             // from the repository.
             mForceLoad = false;
@@ -136,6 +140,8 @@ public class RecipesActivity extends AppCompatActivity implements RecipesContrac
             outState.putParcelableArrayList(SAVED_STATE_RECIPES_LIST,
                     new ArrayList<>(mRecipesAdapter.getRecipesList()));
         }
+        outState.putParcelable(SAVED_STATE_RECYCLER_VIEW_POSITION,
+                mRecyclerViewRecipes.getLayoutManager().onSaveInstanceState());
         super.onSaveInstanceState(outState);
     }
 
@@ -149,6 +155,10 @@ public class RecipesActivity extends AppCompatActivity implements RecipesContrac
         mTextViewRecipesEmptyView.setVisibility(View.GONE);
         mRecyclerViewRecipes.setVisibility(View.VISIBLE);
         mRecipesAdapter.setRecipesList(recipes);
+        if (mRecyclerViewRecipesState != null) {
+            mRecyclerViewRecipes.getLayoutManager()
+                    .onRestoreInstanceState(mRecyclerViewRecipesState);
+        }
     }
 
     @Override
