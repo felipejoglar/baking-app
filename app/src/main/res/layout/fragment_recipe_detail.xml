@@ -32,6 +32,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <android.support.v4.widget.NestedScrollView
+        android:id="@+id/nestedscrollview_recipe_detail_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 

@@ -22,6 +22,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.test.espresso.idling.CountingIdlingResource;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -58,16 +59,20 @@ public class RecipeDetailFragment extends Fragment implements RecipeDetailContra
 
     @NonNull
     private static final String ARGUMENT_RECIPE_ID = "recipe_id";
+    private static final String SAVED_STATE_SCROLL_POSITION = "scroll_position";
 
     private OnItemClickListener mOnItemClickListener;
     private RecipeDetailContract.Presenter mRecipeDetailPresenter;
     private int mRecipeId;
+    private int[] mScrollPosition;
     private IngredientsAdapter mIngredientsAdapter;
     private StepsAdapter mStepsAdapter;
 
     @Nullable
     static CountingIdlingResource sIdlingResource;
 
+    @BindView(R.id.nestedscrollview_recipe_detail_container)
+    NestedScrollView mNestedScrollViewRecipeDetailContainer;
     @BindView(R.id.imageview_recipe_detail_banner)
     ImageView mImageViewRecipeDetailBanner;
     @BindView(R.id.textview_recipe_detail_name)
@@ -136,6 +141,9 @@ public class RecipeDetailFragment extends Fragment implements RecipeDetailContra
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        if (savedInstanceState != null) {
+            mScrollPosition = savedInstanceState.getIntArray(SAVED_STATE_SCROLL_POSITION);
+        }
         setUpIngredientsRecyclerView();
         setUpStepsRecyclerView();
     }
@@ -179,6 +187,14 @@ public class RecipeDetailFragment extends Fragment implements RecipeDetailContra
     }
 
     @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putIntArray(SAVED_STATE_SCROLL_POSITION,
+                new int[]{mNestedScrollViewRecipeDetailContainer.getScrollX(),
+                        mNestedScrollViewRecipeDetailContainer.getScrollY()});
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
     public void setPresenter(@NonNull RecipeDetailContract.Presenter presenter) {
         mRecipeDetailPresenter = presenter;
     }
@@ -198,6 +214,9 @@ public class RecipeDetailFragment extends Fragment implements RecipeDetailContra
     @Override
     public void showRecipeDetailSteps(List<Step> stepList) {
         mStepsAdapter.setStepsList(stepList);
+        if (mScrollPosition != null)
+            mNestedScrollViewRecipeDetailContainer.post(() -> mNestedScrollViewRecipeDetailContainer
+                    .scrollTo(mScrollPosition[0], mScrollPosition[1]));
     }
 
     @Override
