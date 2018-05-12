@@ -201,9 +201,15 @@ public class RecipeDetailFragment extends Fragment implements RecipeDetailContra
 
     @Override
     public void showRecipeDetail(Recipe recipe) {
-        Picasso.get()
-                .load(UiUtils.getImageResource(recipe.getId()))
-                .into(mImageViewRecipeDetailBanner);
+        if (recipe.getImage().isEmpty()) {
+            Picasso.get()
+                    .load(UiUtils.getImageResource(recipe.getId()))
+                    .into(mImageViewRecipeDetailBanner);
+        } else {
+            Picasso.get()
+                    .load(recipe.getImage())
+                    .into(mImageViewRecipeDetailBanner);
+        }
     }
 
     @Override

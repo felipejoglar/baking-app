@@ -62,9 +62,15 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         final Recipe recipe = mRecipesList.get(position);
-        Picasso.get()
-                .load(UiUtils.getImageResource(recipe.getId()))
-                .into(holder.mImageViewItemRecipeBanner);
+        if (recipe.getImage().isEmpty()) {
+            Picasso.get()
+                    .load(UiUtils.getImageResource(recipe.getId()))
+                    .into(holder.mImageViewItemRecipeBanner);
+        } else {
+            Picasso.get()
+                    .load(recipe.getImage())
+                    .into(holder.mImageViewItemRecipeBanner);
+        }
         holder.mTextViewItemRecipeName.setText(recipe.getName());
         holder.mCardViewItemRecipeCard
                 .setOnClickListener(v -> mOnClickListener.onRecipeClicked(recipe));
