@@ -26,7 +26,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -106,9 +105,10 @@ public class RecipesActivity extends AppCompatActivity implements RecipesContrac
         initPresenter();
         // TODO: Maybe we need to pass mForceLoad to BasePresenter.subscribe() as method parameter
         // and add the logic there, in the Presenter.
-        Log.d("onResume", "onResume: load " + mForceLoad);
         if (mForceLoad) {
             mRecipesPresenter.subscribe();
+        } else if (mRecipesList == null || mRecipesList.isEmpty()) {
+            showEmptyView();
         } else {
             showRecipes(mRecipesList);
         }

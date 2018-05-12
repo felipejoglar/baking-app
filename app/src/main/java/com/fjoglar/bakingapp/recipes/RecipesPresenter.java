@@ -30,6 +30,7 @@ import com.fjoglar.bakingapp.recipes.domain.GetRecipes;
 import com.fjoglar.bakingapp.recipes.domain.UpdateRecipes;
 import com.fjoglar.bakingapp.util.schedulers.BaseSchedulerProvider;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RecipesPresenter implements RecipesContract.Presenter {
@@ -132,6 +133,8 @@ public class RecipesPresenter implements RecipesContract.Presenter {
         @Override
         public void onError(Throwable e) {
             Log.e(TAG, e.toString());
+            mRecipesView.hideLoading();
+            showRecipes(new ArrayList<>());
             mIdlingResource.decrement();
         }
     }
