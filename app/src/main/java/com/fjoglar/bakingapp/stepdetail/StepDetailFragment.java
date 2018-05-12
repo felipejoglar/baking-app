@@ -38,6 +38,7 @@ import com.fjoglar.bakingapp.data.source.local.db.RecipeDb;
 import com.fjoglar.bakingapp.data.source.remote.RecipesRemoteDataSource;
 import com.fjoglar.bakingapp.util.schedulers.SchedulerProvider;
 import com.fjoglar.bakingapp.util.ui.UiUtils;
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -62,11 +63,19 @@ public class StepDetailFragment extends Fragment implements StepDetailContract.V
     @NonNull
     private static final String ARGUMENT_STEP_ID = "step_id";
 
+    private static final String SAVED_STATE_WINDOW = "window";
+    private static final String SAVED_STATE_POSITION = "position";
+    private static final String SAVED_STATE_AUTO_PLAY = "auto_play";
+
     private StepNavigationClickListener mStepNavigationClickListener;
     private StepDetailContract.Presenter mStepDetailPresenter;
     private SimpleExoPlayer mSimpleExoPlayer;
     private int mRecipeId;
     private int mStepId;
+
+    private boolean mStartAutoPlay;
+    private int mStartWindow;
+    private long mStartPosition ;
 
     @BindView(R.id.simpleexoplayerview_step_detail_video)
     PlayerView mSimpleExoPlayerViewStepDetailVideo;
@@ -133,7 +142,13 @@ public class StepDetailFragment extends Fragment implements StepDetailContract.V
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
+        if (savedInstanceState != null) {
+            mStartAutoPlay = savedInstanceState.getBoolean(SAVED_STATE_AUTO_PLAY);
+            mStartWindow = savedInstanceState.getInt(SAVED_STATE_WINDOW);
+            mStartPosition = savedInstanceState.getLong(SAVED_STATE_POSITION);
+        } else {
+            clearStartPosition();
+        }
         initPresenter();
     }
 
@@ -177,6 +192,14 @@ public class StepDetailFragment extends Fragment implements StepDetailContract.V
     }
 
     @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putBoolean(SAVED_STATE_AUTO_PLAY, mStartAutoPlay);
+        outState.putInt(SAVED_STATE_WINDOW, mStartWindow);
+        outState.putLong(SAVED_STATE_POSITION, mStartPosition);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
     public void setPresenter(@NonNull StepDetailContract.Presenter presenter) {
         mStepDetailPresenter = presenter;
     }
@@ -192,7 +215,12 @@ public class StepDetailFragment extends Fragment implements StepDetailContract.V
         Uri uri = Uri.parse(videoUrl);
         MediaSource mediaSource = buildMediaSource(uri);
         mSimpleExoPlayer.prepare(mediaSource, true, false);
-        mSimpleExoPlayer.setPlayWhenReady(true);
+
+        mSimpleExoPlayer.setPlayWhenReady(mStartAutoPlay);
+        boolean haveStartPosition = mStartWindow != C.INDEX_UNSET;
+        if (haveStartPosition) {
+            mSimpleExoPlayer.seekTo(mStartWindow, mStartPosition);
+        }
     }
 
     @Override
@@ -262,10 +290,25 @@ public class StepDetailFragment extends Fragment implements StepDetailContract.V
      */
     private void releasePlayer() {
         if (mSimpleExoPlayer != null) {
+            updateStartPosition();
             mSimpleExoPlayer.stop();
             mSimpleExoPlayer.release();
             mSimpleExoPlayer = null;
         }
+    }
+
+    private void updateStartPosition() {
+        if (mSimpleExoPlayer != null) {
+            mStartAutoPlay = mSimpleExoPlayer.getPlayWhenReady();
+            mStartWindow = mSimpleExoPlayer.getCurrentWindowIndex();
+            mStartPosition = Math.max(0, mSimpleExoPlayer.getContentPosition());
+        }
+    }
+
+    private void clearStartPosition() {
+        mStartAutoPlay = true;
+        mStartWindow = C.INDEX_UNSET;
+        mStartPosition = C.TIME_UNSET;
     }
 
     /**
